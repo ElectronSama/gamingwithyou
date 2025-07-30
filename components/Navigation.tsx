@@ -63,7 +63,7 @@ export default function Navigation() {
           <div className="hidden md:flex items-center space-x-4">
             {session ? (
               <div className="flex items-center space-x-4">
-                <span className="text-purple-200">Welcome, {(session.user as any)?.username || session.user?.email}</span>
+                <span className="text-purple-200">Welcome, {session.user?.username || session.user?.email}</span>
                 <Button asChild className="bg-purple-600/20 backdrop-blur-sm border border-purple-500/30 text-white hover:bg-purple-600/30 hover:border-purple-400/50 transition-all duration-300">
                   <Link href="/profile">
                     <User className="h-4 w-4 mr-2" />
@@ -143,7 +143,7 @@ export default function Navigation() {
               <div className="pt-4 border-t border-purple-700">
                 {session ? (
                   <div className="flex flex-col space-y-2">
-                    <span className="text-purple-200 text-sm">Welcome, {(session.user as any)?.username || session.user?.email}</span>
+                                         <span className="text-purple-200 text-sm">Welcome, {session.user?.username || session.user?.email}</span>
                     <Button asChild className="bg-purple-600/20 backdrop-blur-sm border border-purple-500/30 text-white hover:bg-purple-600/30 hover:border-purple-400/50 transition-all duration-300">
                       <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
                         <User className="h-4 w-4 mr-2" />

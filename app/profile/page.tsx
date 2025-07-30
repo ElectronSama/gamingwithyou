@@ -48,7 +48,7 @@ export default function ProfilePage() {
             <div className="flex items-center gap-3 text-white">
               <User className="h-5 w-5 text-purple-400" />
               <span className="font-medium">Username:</span>
-              <span>{(session.user as any)?.username || "N/A"}</span>
+                             <span>{session.user?.username || "N/A"}</span>
             </div>
             <div className="flex items-center gap-3 text-white">
               <Mail className="h-5 w-5 text-purple-400" />
@@ -63,7 +63,7 @@ export default function ProfilePage() {
             <div className="flex items-center gap-3 text-white">
               <Shield className="h-5 w-5 text-purple-400" />
               <span className="font-medium">Role:</span>
-              <span>{(session.user as any)?.isAdmin ? "Admin" : "User"}</span>
+                             <span>{session.user?.isAdmin ? "Admin" : "User"}</span>
             </div>
           </div>
           

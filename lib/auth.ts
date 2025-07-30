@@ -3,6 +3,33 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "./prisma"
 import bcrypt from "bcryptjs"
 
+// Típusdefiníciók kiterjesztése
+declare module "next-auth" {
+  interface User {
+    id: string
+    email: string
+    username: string
+    isAdmin: boolean
+  }
+  
+  interface Session {
+    user: {
+      id: string
+      email: string
+      username: string
+      isAdmin: boolean
+    }
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string
+    username: string
+    isAdmin: boolean
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
@@ -59,15 +86,14 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.id as string
-        session.user.username = token.username as string
-        session.user.isAdmin = token.isAdmin as boolean
+        session.user.id = token.id
+        session.user.username = token.username
+        session.user.isAdmin = token.isAdmin
       }
       return session
     }
   },
   pages: {
     signIn: "/login",
-    signUp: "/registration",
   }
 } 
