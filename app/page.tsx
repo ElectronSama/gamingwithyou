@@ -29,17 +29,7 @@ export default function Home() {
               <span className="text-[#19FF00] text-sm font-medium">Gaming Community Platform</span>
             </div>
             
-            {/* Logo */}
-            <div className="flex justify-center mb-8">
-              <Image 
-                src="/logo/logo.png" 
-                alt="GamingWithYou Logo" 
-                width={200} 
-                height={80} 
-                className="h-20 w-auto"
-                priority
-              />
-            </div>
+
             
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
               Connect with
