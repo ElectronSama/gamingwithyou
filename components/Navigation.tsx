@@ -12,6 +12,7 @@ import {
   X
 } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { useState, useEffect } from "react"
 import { useSession, signOut } from "next-auth/react"
 
@@ -39,7 +40,14 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <Gamepad2 className="h-8 w-8 text-green-300" />
+            <Image 
+              src="/logo/logo.png" 
+              alt="GamingWithYou Logo" 
+              width={32} 
+              height={32} 
+              className="h-8 w-auto"
+              priority
+            />
             <span className="text-xl font-bold text-white">GamingWithYou</span>
           </Link>
 

@@ -14,6 +14,7 @@ import {
   Sparkles
 } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 export default function Home() {
   return (
@@ -26,6 +27,18 @@ export default function Home() {
             <div className="inline-flex items-center gap-2 bg-[#19FF00]/20 border border-[#19FF00]/30 rounded-full px-4 py-2 mb-8">
               <Sparkles className="h-4 w-4 text-[#19FF00]" />
               <span className="text-[#19FF00] text-sm font-medium">Gaming Community Platform</span>
+            </div>
+            
+            {/* Logo */}
+            <div className="flex justify-center mb-8">
+              <Image 
+                src="/logo/logo.png" 
+                alt="GamingWithYou Logo" 
+                width={200} 
+                height={80} 
+                className="h-20 w-auto"
+                priority
+              />
             </div>
             
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">

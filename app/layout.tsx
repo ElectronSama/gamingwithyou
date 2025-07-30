@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   description: "Connect with gamers, book sessions, and discover amazing gaming experiences. Your ultimate gaming community platform.",
   keywords: ["gaming", "community", "bookings", "gamers", "esports", "tournaments"],
   authors: [{ name: "GamingWithYou Team" }],
+  icons: {
+    icon: '/favicon.ico',
+  },
   openGraph: {
     title: "GamingWithYou - Connect with Gamers",
     description: "Connect with gamers, book sessions, and discover amazing gaming experiences.",
