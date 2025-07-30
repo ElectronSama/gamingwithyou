@@ -1,0 +1,6 @@
+@GamingWithMe.Api_HostAddress = http://localhost:5094
+
+GET {{GamingWithMe.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
