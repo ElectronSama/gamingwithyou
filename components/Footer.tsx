@@ -14,18 +14,19 @@ export default function Footer() {
 
   return (
     <footer className="bg-black border-t border-green-700">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div className="space-y-4">
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        {/* Mobile: 3 columns, Desktop: 4 columns */}
+        <div className="grid grid-cols-3 md:grid-cols-4 gap-6 md:gap-8">
+          {/* Brand - Full width on mobile, first column on desktop */}
+          <div className="col-span-3 md:col-span-1 space-y-4">
             <div className="flex items-center space-x-2">
               <Gamepad2 className="h-8 w-8 text-green-300" />
               <span className="text-xl font-bold text-white">GamingWithYou</span>
             </div>
-            <p className="text-gray-300 text-sm">
+            <p className="text-gray-300 text-sm text-justify">
               Connect with gamers, book sessions, and discover amazing gaming experiences.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex justify-center space-x-4">
               <Link href="#" className="text-gray-400 hover:text-white transition-colors">
                 <Twitter className="h-5 w-5" />
               </Link>
@@ -42,9 +43,9 @@ export default function Footer() {
           </div>
 
           {/* Platform */}
-          <div className="space-y-4">
-            <h3 className="text-white font-semibold">Platform</h3>
-            <ul className="space-y-2 text-sm">
+          <div className="space-y-3 md:space-y-4">
+            <h3 className="text-white font-semibold text-sm md:text-base">Platform</h3>
+            <ul className="space-y-2 text-xs md:text-sm">
               <li>
                 <Link href="/games" className="text-gray-300 hover:text-white transition-colors">
                   Games
@@ -69,9 +70,9 @@ export default function Footer() {
           </div>
 
           {/* Support */}
-          <div className="space-y-4">
-            <h3 className="text-white font-semibold">Support</h3>
-            <ul className="space-y-2 text-sm">
+          <div className="space-y-3 md:space-y-4">
+            <h3 className="text-white font-semibold text-sm md:text-base">Support</h3>
+            <ul className="space-y-2 text-xs md:text-sm">
               <li>
                 <Link href="/help" className="text-gray-300 hover:text-white transition-colors">
                   Help Center
@@ -96,9 +97,9 @@ export default function Footer() {
           </div>
 
           {/* Legal */}
-          <div className="space-y-4">
-            <h3 className="text-white font-semibold">Legal</h3>
-            <ul className="space-y-2 text-sm">
+          <div className="space-y-3 md:space-y-4">
+            <h3 className="text-white font-semibold text-sm md:text-base">Legal</h3>
+            <ul className="space-y-2 text-xs md:text-sm">
               <li>
                 <Link href="/terms" className="text-gray-300 hover:text-white transition-colors">
                   Terms of Service
@@ -124,13 +125,13 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-green-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm">
+        <div className="border-t border-green-700 mt-6 md:mt-8 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <p className="text-gray-400 text-xs md:text-sm text-center md:text-left">
             © {currentYear} GamingWithYou. All rights reserved.
           </p>
-          <div className="flex items-center space-x-2 text-gray-400 text-sm mt-4 md:mt-0">
+          <div className="flex items-center space-x-2 text-gray-400 text-xs md:text-sm">
             <span>Made with</span>
-            <Heart className="h-4 w-4 text-red-400" />
+            <Heart className="h-3 w-3 md:h-4 md:w-4 text-red-400" />
             <span>by the GamingWithYou Team</span>
           </div>
         </div>
