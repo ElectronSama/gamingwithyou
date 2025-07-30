@@ -111,7 +111,7 @@ const categories = ["All", "Coaching", "Boosting", "Training", "Setup", "Custom"
 
 export default function ServicesPage() {
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
+    <div className="bg-gradient-to-br from-slate-900 via-black to-slate-900 min-h-screen">
       {/* Header */}
       <section className="pt-16 pb-8">
         <div className="container mx-auto px-4">
@@ -132,11 +132,11 @@ export default function ServicesPage() {
               <input
                 type="text"
                 placeholder="Search services..."
-                className="w-full pl-10 pr-4 py-3 bg-white/10 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-400"
+                className="w-full pl-10 pr-4 py-3 bg-white/10 border border-green-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-green-400"
               />
             </div>
             <div className="flex gap-2">
-              <Button className="bg-purple-600/20 backdrop-blur-sm border border-purple-500/30 text-white hover:bg-purple-600/30">
+                              <Button className="bg-green-600/20 backdrop-blur-sm border border-green-500/30 text-white hover:bg-green-600/30">
                 <Filter className="mr-2 h-4 w-4" />
                 Filter
               </Button>
@@ -153,7 +153,7 @@ export default function ServicesPage() {
               <Badge
                 key={category}
                 variant={category === "All" ? "default" : "secondary"}
-                className="cursor-pointer hover:bg-purple-600/20"
+                className="cursor-pointer hover:bg-green-600/20"
               >
                 {category}
               </Badge>
@@ -167,10 +167,10 @@ export default function ServicesPage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((service) => (
-              <Card key={service.id} className="gaming-card border-0 bg-gradient-to-br from-purple-600/10 to-purple-800/10 hover:from-purple-600/20 hover:to-purple-800/20 transition-all duration-300">
+              <Card key={service.id} className="gaming-card border-0 bg-gradient-to-br from-green-600/10 to-green-800/10 hover:from-green-600/20 hover:to-green-800/20 transition-all duration-300">
                 <CardHeader>
                   <div className="flex items-start justify-between mb-2">
-                    <Badge className="bg-purple-600/50 text-purple-200">
+                    <Badge className="bg-green-600/50 text-green-200">
                       {service.category}
                     </Badge>
                     <Badge className="bg-green-600/50 text-green-200">
@@ -239,7 +239,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Service Categories */}
-      <section className="py-16 bg-gradient-to-r from-purple-600/20 to-blue-600/20">
+              <section className="py-16 bg-gradient-to-r from-green-600/20 to-green-800/20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -251,7 +251,7 @@ export default function ServicesPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card className="gaming-card border-0 bg-gradient-to-br from-purple-600/10 to-purple-800/10 hover:from-purple-600/20 hover:to-purple-800/20 transition-all duration-300">
+            <Card className="gaming-card border-0 bg-gradient-to-br from-green-600/10 to-green-800/10 hover:from-green-600/20 hover:to-green-800/20 transition-all duration-300">
               <CardHeader className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center mb-6 mx-auto">
                   <Crown className="h-8 w-8 text-white" />
@@ -311,9 +311,9 @@ export default function ServicesPage() {
               </CardHeader>
             </Card>
 
-            <Card className="gaming-card border-0 bg-gradient-to-br from-indigo-600/10 to-indigo-800/10 hover:from-indigo-600/20 hover:to-indigo-800/20 transition-all duration-300">
+            <Card className="gaming-card border-0 bg-gradient-to-br from-green-600/10 to-green-800/10 hover:from-green-600/20 hover:to-green-800/20 transition-all duration-300">
               <CardHeader className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                                  <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-green-700 rounded-2xl flex items-center justify-center mb-6 mx-auto">
                   <MessageCircle className="h-8 w-8 text-white" />
                 </div>
                 <CardTitle className="text-white text-xl mb-2">Consultation</CardTitle>
@@ -340,7 +340,7 @@ export default function ServicesPage() {
               <Plus className="mr-3 h-6 w-6" />
               Start Offering Services
             </Button>
-            <Button className="bg-purple-600/20 backdrop-blur-sm border border-purple-500/30 text-white hover:bg-purple-600/30 hover:border-purple-400/50 text-lg px-8 py-4 transition-all duration-300">
+                            <Button className="bg-green-600/20 backdrop-blur-sm border border-green-500/30 text-white hover:bg-green-600/30 hover:border-green-400/50 text-lg px-8 py-4 transition-all duration-300">
               <MessageCircle className="mr-3 h-6 w-6" />
               Learn More
             </Button>

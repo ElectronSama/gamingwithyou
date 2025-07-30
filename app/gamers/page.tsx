@@ -94,14 +94,14 @@ const languages = ["All", "English", "Spanish", "German", "French", "Russian", "
 
 export default function GamersPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-black to-slate-900">
       {/* Header */}
       <section className="py-8 bg-black/20">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                <Users className="inline mr-3 h-10 w-10 text-purple-400" />
+                <Users className="inline mr-3 h-10 w-10 text-green-400" />
                 Find Gamers
               </h1>
               <p className="text-xl text-gray-300">
@@ -129,14 +129,14 @@ export default function GamersPage() {
               <input
                 type="text"
                 placeholder="Search gamers..."
-                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
 
             {/* Game Filter */}
             <div className="flex items-center gap-2">
               <Gamepad2 className="h-5 w-5 text-gray-400" />
-              <select className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+              <select className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500">
                 {games.map(game => (
                   <option key={game} value={game}>{game}</option>
                 ))}
@@ -146,7 +146,7 @@ export default function GamersPage() {
             {/* Language Filter */}
             <div className="flex items-center gap-2">
               <Filter className="h-5 w-5 text-gray-400" />
-              <select className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+              <select className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500">
                 {languages.map(language => (
                   <option key={language} value={language}>{language}</option>
                 ))}
@@ -164,7 +164,7 @@ export default function GamersPage() {
               <Card key={gamer.id} className="gaming-card hover:transform hover:scale-105 transition-all duration-300">
                 <CardHeader>
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
+                    <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center">
                       <Users className="h-8 w-8 text-white" />
                     </div>
                     <div className="flex-1">
@@ -185,7 +185,7 @@ export default function GamersPage() {
                     <h4 className="text-white font-semibold mb-2">Games:</h4>
                     <div className="flex flex-wrap gap-2">
                       {gamer.games.map(game => (
-                        <Badge key={game} variant="secondary" className="bg-purple-600/20 text-purple-300 border-purple-500/30">
+                        <Badge key={game} variant="secondary" className="bg-green-600/20 text-green-300 border-green-500/30">
                           {game}
                         </Badge>
                       ))}

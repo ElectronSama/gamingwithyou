@@ -13,13 +13,13 @@ export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-purple-900 border-t border-purple-700">
+    <footer className="bg-black border-t border-green-700">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <Gamepad2 className="h-8 w-8 text-purple-300" />
+              <Gamepad2 className="h-8 w-8 text-green-300" />
               <span className="text-xl font-bold text-white">GamingWithYou</span>
             </div>
             <p className="text-gray-300 text-sm">
@@ -124,7 +124,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-purple-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <div className="border-t border-green-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
             © {currentYear} GamingWithYou. All rights reserved.
           </p>

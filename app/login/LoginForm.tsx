@@ -62,25 +62,25 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-black to-slate-900 flex">
       {/* Left Column - Gaming Content */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-purple-600/20 to-blue-600/20 relative overflow-hidden">
+              <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-600/20 to-green-800/20 relative overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+                      <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
           <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
         </div>
 
         {/* Content */}
         <div className="relative z-10 flex flex-col justify-center items-center text-center px-12">
-          <div className="w-32 h-32 bg-gradient-to-br from-purple-600 to-blue-600 rounded-3xl flex items-center justify-center mb-8 shadow-2xl">
+          <div className="w-32 h-32 bg-gradient-to-br from-green-600 to-green-700 rounded-3xl flex items-center justify-center mb-8 shadow-2xl">
             <Gamepad2 className="h-16 w-16 text-white" />
           </div>
           
           <h1 className="text-5xl font-bold text-white mb-6">
             Welcome Back to
-            <span className="block bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-green-400 to-green-500 bg-clip-text text-transparent">
               GamingWithYou
             </span>
           </h1>
@@ -92,7 +92,7 @@ export default function LoginForm() {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-8 w-full max-w-md">
             <div className="text-center">
-              <div className="text-3xl font-bold text-purple-400 mb-2">10K+</div>
+              <div className="text-3xl font-bold text-green-400 mb-2">10K+</div>
               <div className="text-gray-400 text-sm">Active Gamers</div>
             </div>
             <div className="text-center">
@@ -116,7 +116,7 @@ export default function LoginForm() {
               <span>Connect with gamers worldwide</span>
             </div>
             <div className="flex items-center gap-3 text-gray-300">
-              <Star className="h-5 w-5 text-purple-400" />
+              <Star className="h-5 w-5 text-green-400" />
               <span>Build your gaming reputation</span>
             </div>
           </div>
@@ -125,15 +125,15 @@ export default function LoginForm() {
 
       {/* Right Column - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <Card className="w-full max-w-md gaming-card border-0 bg-gradient-to-br from-purple-600/10 to-purple-800/10 backdrop-blur-sm">
+        <Card className="w-full max-w-md gaming-card border-0 bg-gradient-to-br from-green-600/10 to-green-800/10 backdrop-blur-sm">
           <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-green-600 to-green-700 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
               <Gamepad2 className="h-8 w-8 text-white" />
             </div>
             <div className="flex items-center justify-center gap-2 mb-4">
-              <Sparkles className="h-5 w-5 text-purple-400" />
-              <span className="text-purple-400 text-sm font-medium">Welcome Back, Gamer!</span>
-              <Sparkles className="h-5 w-5 text-purple-400" />
+                          <Sparkles className="h-5 w-5 text-green-400" />
+            <span className="text-green-400 text-sm font-medium">Welcome Back, Gamer!</span>
+            <Sparkles className="h-5 w-5 text-green-400" />
             </div>
             <CardTitle className="text-3xl font-bold text-white mb-2">
               Sign In
@@ -166,7 +166,7 @@ export default function LoginForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className="w-full px-4 py-3 bg-white/10 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-400 transition-all duration-300"
+                  className="w-full px-4 py-3 bg-white/10 border border-green-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-400 transition-all duration-300"
                   required
                 />
               </div>
@@ -184,7 +184,7 @@ export default function LoginForm() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
-                    className="w-full px-4 py-3 bg-white/10 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-400 transition-all duration-300 pr-12"
+                    className="w-full px-4 py-3 bg-white/10 border border-green-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-400 transition-all duration-300 pr-12"
                     required
                   />
                   <button
@@ -201,7 +201,7 @@ export default function LoginForm() {
               <div className="text-right">
                 <Link 
                   href="/forgot-password" 
-                  className="text-sm text-purple-400 hover:text-purple-300 underline transition-colors"
+                  className="text-sm text-green-400 hover:text-green-300 underline transition-colors"
                 >
                   Forgot your password?
                 </Link>
@@ -231,7 +231,7 @@ export default function LoginForm() {
                 <span>New to GamingWithYou? </span>
                 <Link 
                   href="/registration" 
-                  className="text-purple-400 hover:text-purple-300 underline font-medium transition-colors"
+                  className="text-green-400 hover:text-green-300 underline font-medium transition-colors"
                 >
                   Create an account
                 </Link>

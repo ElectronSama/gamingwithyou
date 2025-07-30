@@ -43,6 +43,12 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Custom gaming colors
+        gaming: {
+          green: "#19FF00",
+          blue: "#2856F4",
+          black: "#000000",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

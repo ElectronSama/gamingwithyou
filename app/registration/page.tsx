@@ -86,25 +86,25 @@ export default function RegistrationPage() {
   const doPasswordsMatch = formData.password === formData.confirmPassword
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-black to-slate-900 flex">
       {/* Left Column - Gaming Content */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-purple-600/20 to-blue-600/20 relative overflow-hidden">
+              <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-600/20 to-green-800/20 relative overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+                      <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
           <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
         </div>
 
         {/* Content */}
         <div className="relative z-10 flex flex-col justify-center items-center text-center px-12">
-          <div className="w-32 h-32 bg-gradient-to-br from-purple-600 to-blue-600 rounded-3xl flex items-center justify-center mb-8 shadow-2xl">
+          <div className="w-32 h-32 bg-gradient-to-br from-green-600 to-green-700 rounded-3xl flex items-center justify-center mb-8 shadow-2xl">
             <Gamepad2 className="h-16 w-16 text-white" />
           </div>
           
           <h1 className="text-5xl font-bold text-white mb-6">
             Join the Ultimate
-            <span className="block bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-green-400 to-green-500 bg-clip-text text-transparent">
               Gaming Community
             </span>
           </h1>
@@ -116,11 +116,11 @@ export default function RegistrationPage() {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-8 w-full max-w-md">
             <div className="text-center">
-              <div className="text-3xl font-bold text-purple-400 mb-2">50K+</div>
+              <div className="text-3xl font-bold text-green-400 mb-2">50K+</div>
               <div className="text-gray-400 text-sm">Members</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-blue-400 mb-2">1000+</div>
+              <div className="text-3xl font-bold text-green-400 mb-2">1000+</div>
               <div className="text-gray-400 text-sm">Tournaments</div>
             </div>
             <div className="text-center">
@@ -136,11 +136,11 @@ export default function RegistrationPage() {
               <span>Instant matchmaking</span>
             </div>
             <div className="flex items-center gap-3 text-gray-300">
-              <Trophy className="h-5 w-5 text-blue-400" />
+              <Trophy className="h-5 w-5 text-green-400" />
               <span>Compete in tournaments</span>
             </div>
             <div className="flex items-center gap-3 text-gray-300">
-              <Users className="h-5 w-5 text-purple-400" />
+              <Users className="h-5 w-5 text-green-400" />
               <span>Build your team</span>
             </div>
             <div className="flex items-center gap-3 text-gray-300">
@@ -153,15 +153,15 @@ export default function RegistrationPage() {
 
       {/* Right Column - Registration Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <Card className="w-full max-w-md gaming-card border-0 bg-gradient-to-br from-purple-600/10 to-purple-800/10 backdrop-blur-sm">
+        <Card className="w-full max-w-md gaming-card border-0 bg-gradient-to-br from-green-600/10 to-green-800/10 backdrop-blur-sm">
           <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-green-600 to-green-700 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
               <Gamepad2 className="h-8 w-8 text-white" />
             </div>
             <div className="flex items-center justify-center gap-2 mb-4">
-              <Sparkles className="h-5 w-5 text-purple-400" />
-              <span className="text-purple-400 text-sm font-medium">Join the Gaming Community!</span>
-              <Sparkles className="h-5 w-5 text-purple-400" />
+              <Sparkles className="h-5 w-5 text-green-400" />
+              <span className="text-green-400 text-sm font-medium">Join the Gaming Community!</span>
+              <Sparkles className="h-5 w-5 text-green-400" />
             </div>
             <CardTitle className="text-3xl font-bold text-white mb-2">
               Create Account
@@ -189,7 +189,7 @@ export default function RegistrationPage() {
                   value={formData.username}
                   onChange={(e) => handleInputChange("username", e.target.value)}
                   placeholder="Choose your gaming username"
-                  className="w-full px-4 py-3 bg-white/10 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-400 transition-all duration-300"
+                  className="w-full px-4 py-3 bg-white/10 border border-green-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-400 transition-all duration-300"
                   required
                 />
               </div>
@@ -206,7 +206,7 @@ export default function RegistrationPage() {
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   placeholder="Enter your email"
-                  className="w-full px-4 py-3 bg-white/10 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-400 transition-all duration-300"
+                  className="w-full px-4 py-3 bg-white/10 border border-green-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-400 transition-all duration-300"
                   required
                 />
               </div>
@@ -224,7 +224,7 @@ export default function RegistrationPage() {
                     value={formData.password}
                     onChange={(e) => handleInputChange("password", e.target.value)}
                     placeholder="Create a strong password"
-                    className="w-full px-4 py-3 bg-white/10 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-400 transition-all duration-300 pr-12"
+                    className="w-full px-4 py-3 bg-white/10 border border-green-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-400 transition-all duration-300 pr-12"
                     required
                   />
                   <button
@@ -262,7 +262,7 @@ export default function RegistrationPage() {
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
                     placeholder="Confirm your password"
-                    className="w-full px-4 py-3 bg-white/10 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-400 transition-all duration-300 pr-12"
+                    className="w-full px-4 py-3 bg-white/10 border border-green-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-400 transition-all duration-300 pr-12"
                     required
                   />
                   <button
@@ -294,15 +294,15 @@ export default function RegistrationPage() {
                   type="checkbox"
                   checked={agreedToTerms}
                   onChange={(e) => setAgreedToTerms(e.target.checked)}
-                  className="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-purple-300 rounded"
+                  className="mt-1 h-4 w-4 text-green-600 focus:ring-green-500 border-green-300 rounded"
                 />
                 <label htmlFor="terms" className="text-sm text-gray-300">
                   I agree to the{" "}
-                  <Link href="/terms-and-conditions" className="text-purple-400 hover:text-purple-300 underline transition-colors">
+                  <Link href="/terms-and-conditions" className="text-green-400 hover:text-green-300 underline transition-colors">
                     Terms and Conditions
                   </Link>
                   {" "}and{" "}
-                  <Link href="/privacy-policy" className="text-purple-400 hover:text-purple-300 underline transition-colors">
+                  <Link href="/privacy-policy" className="text-green-400 hover:text-green-300 underline transition-colors">
                     Privacy Policy
                   </Link>
                 </label>
@@ -334,7 +334,7 @@ export default function RegistrationPage() {
                 <span>Already have an account? </span>
                 <Link 
                   href="/login" 
-                  className="text-purple-400 hover:text-purple-300 underline font-medium transition-colors"
+                  className="text-green-400 hover:text-green-300 underline font-medium transition-colors"
                 >
                   Sign in
                 </Link>

@@ -32,29 +32,29 @@ export default function Navigation() {
   return (
     <nav className={`sticky top-0 z-50 transition-all duration-300 ${
       isScrolled 
-        ? 'bg-purple-900/20 backdrop-blur-sm border-b border-purple-500/30' 
-        : 'bg-purple-900 border-b border-purple-700'
+        ? 'bg-black/20 backdrop-blur-sm border-b border-green-500/30' 
+        : 'bg-black border-b border-green-700'
     }`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <Gamepad2 className="h-8 w-8 text-purple-300" />
+            <Gamepad2 className="h-8 w-8 text-green-300" />
             <span className="text-xl font-bold text-white">GamingWithYou</span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/games" className="text-purple-200 hover:text-white transition-colors">
+            <Link href="/games" className="text-green-200 hover:text-white transition-colors">
               Games
             </Link>
-            <Link href="/gamers" className="text-purple-200 hover:text-white transition-colors">
+            <Link href="/gamers" className="text-green-200 hover:text-white transition-colors">
               Gamers
             </Link>
-            <Link href="/events" className="text-purple-200 hover:text-white transition-colors">
+            <Link href="/events" className="text-green-200 hover:text-white transition-colors">
               Events
             </Link>
-            <Link href="/services" className="text-purple-200 hover:text-white transition-colors">
+            <Link href="/services" className="text-green-200 hover:text-white transition-colors">
               Services
             </Link>
           </div>
@@ -63,8 +63,8 @@ export default function Navigation() {
           <div className="hidden md:flex items-center space-x-4">
             {session ? (
               <div className="flex items-center space-x-4">
-                <span className="text-purple-200">Welcome, {session.user?.username || session.user?.email}</span>
-                <Button asChild className="bg-purple-600/20 backdrop-blur-sm border border-purple-500/30 text-white hover:bg-purple-600/30 hover:border-purple-400/50 transition-all duration-300">
+                <span className="text-green-200">Welcome, {session.user?.username || session.user?.email}</span>
+                <Button asChild className="bg-green-600/20 backdrop-blur-sm border border-green-500/30 text-white hover:bg-green-600/30 hover:border-green-400/50 transition-all duration-300">
                   <Link href="/profile">
                     <User className="h-4 w-4 mr-2" />
                     Profile
@@ -80,7 +80,7 @@ export default function Navigation() {
               </div>
             ) : (
               <>
-                <Button asChild className="bg-purple-600/20 backdrop-blur-sm border border-purple-500/30 text-white hover:bg-purple-600/30 hover:border-purple-400/50 transition-all duration-300">
+                <Button asChild className="bg-green-600/20 backdrop-blur-sm border border-green-500/30 text-white hover:bg-green-600/30 hover:border-green-400/50 transition-all duration-300">
                   <Link href="/login">
                     Sign In
                   </Link>
@@ -97,7 +97,7 @@ export default function Navigation() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-purple-200 p-2"
+            className="md:hidden text-green-200 p-2"
           >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -105,11 +105,11 @@ export default function Navigation() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-purple-700">
+          <div className="md:hidden py-4 border-t border-green-700">
             <div className="flex flex-col space-y-4">
               <Link 
                 href="/games" 
-                className="text-purple-200 hover:text-white transition-colors flex items-center space-x-2"
+                className="text-green-200 hover:text-white transition-colors flex items-center space-x-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <Gamepad2 className="h-5 w-5" />
@@ -117,7 +117,7 @@ export default function Navigation() {
               </Link>
               <Link 
                 href="/gamers" 
-                className="text-purple-200 hover:text-white transition-colors flex items-center space-x-2"
+                className="text-green-200 hover:text-white transition-colors flex items-center space-x-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <Users className="h-5 w-5" />
@@ -125,7 +125,7 @@ export default function Navigation() {
               </Link>
               <Link 
                 href="/events" 
-                className="text-purple-200 hover:text-white transition-colors flex items-center space-x-2"
+                className="text-green-200 hover:text-white transition-colors flex items-center space-x-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <Calendar className="h-5 w-5" />
@@ -133,18 +133,18 @@ export default function Navigation() {
               </Link>
               <Link 
                 href="/services" 
-                className="text-purple-200 hover:text-white transition-colors flex items-center space-x-2"
+                className="text-green-200 hover:text-white transition-colors flex items-center space-x-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <Settings className="h-5 w-5" />
                 <span>Services</span>
               </Link>
               
-              <div className="pt-4 border-t border-purple-700">
+              <div className="pt-4 border-t border-green-700">
                 {session ? (
                   <div className="flex flex-col space-y-2">
-                                         <span className="text-purple-200 text-sm">Welcome, {session.user?.username || session.user?.email}</span>
-                    <Button asChild className="bg-purple-600/20 backdrop-blur-sm border border-purple-500/30 text-white hover:bg-purple-600/30 hover:border-purple-400/50 transition-all duration-300">
+                                         <span className="text-green-200 text-sm">Welcome, {session.user?.username || session.user?.email}</span>
+                    <Button asChild className="bg-green-600/20 backdrop-blur-sm border border-green-500/30 text-white hover:bg-green-600/30 hover:border-green-400/50 transition-all duration-300">
                       <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
                         <User className="h-4 w-4 mr-2" />
                         Profile
@@ -163,7 +163,7 @@ export default function Navigation() {
                   </div>
                 ) : (
                   <div className="flex flex-col space-y-2">
-                    <Button asChild className="bg-purple-600/20 backdrop-blur-sm border border-purple-500/30 text-white hover:bg-purple-600/30 hover:border-purple-400/50 transition-all duration-300">
+                    <Button asChild className="bg-green-600/20 backdrop-blur-sm border border-green-500/30 text-white hover:bg-green-600/30 hover:border-green-400/50 transition-all duration-300">
                       <Link href="/login" onClick={() => setIsMenuOpen(false)}>
                         Sign In
                       </Link>

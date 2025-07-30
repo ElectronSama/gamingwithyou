@@ -92,14 +92,14 @@ const platforms = ["All", "PC", "Console", "Mobile", "Multi-platform"]
 
 export default function GamesPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-black to-slate-900">
       {/* Header */}
       <section className="py-8 bg-black/20">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                <Gamepad2 className="inline mr-3 h-10 w-10 text-purple-400" />
+                <Gamepad2 className="inline mr-3 h-10 w-10 text-green-400" />
                 Games Library
               </h1>
               <p className="text-xl text-gray-300">
@@ -127,14 +127,14 @@ export default function GamesPage() {
               <input
                 type="text"
                 placeholder="Search games..."
-                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
 
             {/* Genre Filter */}
             <div className="flex items-center gap-2">
               <Filter className="h-5 w-5 text-gray-400" />
-              <select className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+              <select className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500">
                 {genres.map(genre => (
                   <option key={genre} value={genre}>{genre}</option>
                 ))}
@@ -144,7 +144,7 @@ export default function GamesPage() {
             {/* Platform Filter */}
             <div className="flex items-center gap-2">
               <Filter className="h-5 w-5 text-gray-400" />
-              <select className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+              <select className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500">
                 {platforms.map(platform => (
                   <option key={platform} value={platform}>{platform}</option>
                 ))}
@@ -161,7 +161,7 @@ export default function GamesPage() {
             {games.map((game) => (
               <Card key={game.id} className="gaming-card hover:transform hover:scale-105 transition-all duration-300">
                 <CardHeader>
-                  <div className="aspect-video bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg mb-4 flex items-center justify-center">
+                  <div className="aspect-video bg-gradient-to-br from-green-600 to-green-700 rounded-lg mb-4 flex items-center justify-center">
                     <Gamepad2 className="h-16 w-16 text-white" />
                   </div>
                   <div className="flex justify-between items-start mb-2">
@@ -177,7 +177,7 @@ export default function GamesPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    <Badge variant="secondary" className="bg-purple-600/20 text-purple-300 border-purple-500/30">
+                    <Badge variant="secondary" className="bg-green-600/20 text-green-300 border-green-500/30">
                       {game.genre}
                     </Badge>
                     <Badge variant="secondary" className="bg-blue-600/20 text-blue-300 border-blue-500/30">
