@@ -25,6 +25,7 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     id: string
+    email: string
     username: string
     isAdmin: boolean
   }
@@ -73,12 +74,17 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   session: {
-    strategy: "jwt"
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
   },
   callbacks: {
     async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
         token.id = user.id
+        token.email = user.email
         token.username = user.username
         token.isAdmin = user.isAdmin
       }
@@ -87,6 +93,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }: { session: any; token: any }) {
       if (token) {
         session.user.id = token.id
+        session.user.email = token.email
         session.user.username = token.username
         session.user.isAdmin = token.isAdmin
       }
@@ -95,5 +102,6 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/login",
-  }
+  },
+  debug: process.env.NODE_ENV === 'development',
 } 

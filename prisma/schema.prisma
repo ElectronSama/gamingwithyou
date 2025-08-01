@@ -37,6 +37,7 @@ model User {
   gameEvents        GameEvent[]
   gameEasterEggs    GameEasterEgg[]
 
+
   @@map("users")
 }
 
@@ -101,6 +102,16 @@ model Game {
   releaseDate DateTime?
   rating      Float?
   isActive    Boolean  @default(true)
+  
+  // IGDB Integration
+  igdbId      Int?     @unique
+  igdbSlug    String?  @unique
+  igdbRating  Float?
+  igdbRatingCount Int?
+  igdbCoverUrl String?
+  igdbScreenshots String[] // JSON array of screenshot URLs
+  igdbVideos  String[] // JSON array of video IDs
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -256,4 +267,6 @@ model GameEasterEgg {
   creator User @relation(fields: [createdBy], references: [id])
 
   @@map("game_easter_eggs")
-} 
+}
+
+ 

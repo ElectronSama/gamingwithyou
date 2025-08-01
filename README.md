@@ -1,76 +1,63 @@
 # GamingWithYou
 
-A modern gaming community platform built with **Next.js 15**, **Prisma**, and **TypeScript**. Connect with gamers, book sessions, and discover amazing gaming experiences.
+A modern gaming platform that connects gamers and service providers.
 
-## 🚀 Live Demo
+## Features
 
-[Coming Soon - Deploy to Vercel]
+- **User Authentication**: Secure login and registration system
+- **Game Database**: Comprehensive game database with IGDB integration
+- **Booking System**: Real-time booking and scheduling
+- **Service Management**: Fixed services and custom orders
+- **Admin Panel**: Complete admin interface for content management
+- **Multi-language Support**: Internationalization with i18next
+- **Responsive Design**: Modern UI with Tailwind CSS
 
-## ✨ Features
+## IGDB Integration
 
-### 🎮 **Gaming Community**
-- **User Profiles** - Create detailed gaming profiles with skills, languages, and preferences
-- **Game Database** - Comprehensive game library with ratings and descriptions
-- **Gamer Discovery** - Find players based on games, skills, and availability
-- **Social Features** - Connect, chat, and build gaming friendships
+This project includes a comprehensive IGDB (Internet Game Database) integration that provides:
 
-### 📅 **Booking System**
-- **Session Booking** - Book gaming sessions with skilled players
-- **Availability Management** - Set your availability and pricing
-- **Real-time Scheduling** - Instant booking confirmations
-- **Payment Integration** - Secure Stripe payments
+### 🎮 Game Data Management
+- **Real-time Search**: Search games directly from IGDB
+- **Popular Games**: Sync trending and popular games
+- **Genre & Platform Filtering**: Filter games by genre and platform
+- **Rich Metadata**: Cover images, screenshots, videos, ratings
 
-### 🛍️ **Service Marketplace**
-- **Fixed Services** - Offer coaching, boosting, and custom services
-- **Order Management** - Track service orders and progress
-- **Review System** - Rate and review service providers
-- **Escrow Protection** - Secure payment handling
+### ⚡ Performance Features
+- **Smart Caching**: 5-minute cache for API responses
+- **Rate Limit Handling**: Automatic rate limit detection and handling
+- **Error Recovery**: Graceful error handling and retry logic
+- **Batch Processing**: Efficient syncing of multiple games
 
-### 🏆 **Events & Tournaments**
-- **Gaming Events** - Join tournaments and community events
-- **Tournament Management** - Create and manage competitive events
-- **Prize Pools** - Win prizes and recognition
-- **Live Streaming** - Stream and watch gaming content
+### 🔧 Technical Features
+- **API Endpoints**: Complete REST API for game management
+- **Database Sync**: Automatic sync between IGDB and local database
+- **Statistics**: Comprehensive sync statistics and progress tracking
+- **Admin Interface**: Built-in admin panel for sync management
 
-### 🎯 **Admin Features**
-- **Game Management** - Add and manage games in the database
-- **User Management** - Admin panel for user oversight
-- **Content Moderation** - Manage news, events, and content
-- **Analytics Dashboard** - Platform insights and statistics
+### 📊 Available Endpoints
+```
+GET  /api/igdb/search?q={query}&limit={limit}
+GET  /api/igdb/popular?limit={limit}
+GET  /api/igdb/game/{slug}
+GET  /api/igdb/genres
+GET  /api/igdb/platforms
+GET  /api/igdb/cache
+DELETE /api/igdb/cache
 
-## 🛠️ Tech Stack
+POST /api/games/sync
+POST /api/games/sync/popular
+POST /api/games/sync/genre
+POST /api/games/sync/platform
+GET  /api/games/sync/stats
+```
 
-### **Frontend**
-- **Next.js 15** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first styling
-- **Radix UI** - Accessible component primitives
-- **Framer Motion** - Smooth animations
-- **Lucide React** - Beautiful icons
+For detailed setup instructions, see [IGDB_SETUP.md](./IGDB_SETUP.md).
 
-### **Backend**
-- **Prisma** - Type-safe database ORM
-- **PostgreSQL** - Reliable database
-- **NextAuth.js** - Authentication system
-- **Stripe** - Payment processing
-- **bcryptjs** - Password hashing
-
-### **Deployment**
-- **Vercel** - Hosting and CI/CD
-- **PostgreSQL** - Database hosting (Vercel Postgres)
-
-## 📦 Installation
-
-### Prerequisites
-- Node.js 18+ 
-- PostgreSQL database
-- Stripe account (for payments)
-
-### Setup
+## Quick Start
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/gamingwithyou.git
+   git clone <repository-url>
    cd gamingwithyou
    ```
 
@@ -79,161 +66,177 @@ A modern gaming community platform built with **Next.js 15**, **Prisma**, and **
    npm install
    ```
 
-3. **Environment Setup**
-   Create a `.env.local` file:
-   ```env
-   # Database
-   DATABASE_URL="postgresql://username:password@localhost:5432/gamingwithyou"
-   
-   # NextAuth
-   NEXTAUTH_URL="http://localhost:3000"
-   NEXTAUTH_SECRET="your-secret-key-here"
-   
-   # Stripe
-   STRIPE_PUBLISHABLE_KEY="pk_test_your_stripe_publishable_key"
-   STRIPE_SECRET_KEY="sk_test_your_stripe_secret_key"
-   STRIPE_WEBHOOK_SECRET="whsec_your_webhook_secret"
-   
-   # Google OAuth (optional)
-   GOOGLE_CLIENT_ID="your_google_client_id"
-   GOOGLE_CLIENT_SECRET="your_google_client_secret"
-   ```
-
-4. **Database Setup**
+3. **Set up environment variables**
    ```bash
-   # Generate Prisma client
-   npm run db:generate
-   
-   # Push schema to database
-   npm run db:push
-   
-   # (Optional) Run migrations
-   npm run db:migrate
+   cp .env.example .env.local
+   # Edit .env.local with your configuration
    ```
 
-5. **Start Development Server**
+4. **Set up the database**
+   ```bash
+   npm run db:migrate
+   npm run db:generate
+   ```
+
+5. **Start the development server**
    ```bash
    npm run dev
    ```
 
-6. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-## 🗄️ Database Schema
-
-The application uses a comprehensive database schema with the following main entities:
-
-### **Core Models**
-- **User** - User profiles and authentication
-- **Game** - Game database and metadata
-- **Booking** - Session bookings between users
-- **FixedService** - Service offerings
-- **ServiceOrder** - Service order management
-- **GameEvent** - Tournaments and events
-- **GameNews** - Gaming news and content
-
-### **Supporting Models**
-- **UserLanguage** - User language skills
-- **UserGame** - User game associations
-- **UserTag** - User categorization tags
-- **UserAvailability** - User availability slots
-- **Discount** - Coupon and discount system
-
-## 🚀 Deployment
-
-### Vercel Deployment
-
-1. **Push to GitHub**
+6. **Test IGDB integration**
    ```bash
-   git add .
-   git commit -m "Initial commit"
-   git push origin main
+   npm run test:igdb
    ```
 
-2. **Connect to Vercel**
-   - Go to [vercel.com](https://vercel.com)
-   - Import your GitHub repository
-   - Add environment variables
-   - Deploy!
-
-3. **Database Setup**
-   - Use Vercel Postgres or external PostgreSQL
-   - Update `DATABASE_URL` in environment variables
-   - Run database migrations
-
-### Environment Variables for Production
+## Environment Variables
 
 ```env
-DATABASE_URL="postgresql://..."
-NEXTAUTH_URL="https://your-domain.vercel.app"
-NEXTAUTH_SECRET="your-production-secret"
-STRIPE_PUBLISHABLE_KEY="pk_live_..."
-STRIPE_SECRET_KEY="sk_live_..."
+# Database
+POSTGRES_URL="postgresql://..."
+
+# Authentication
+NEXTAUTH_SECRET="your-secret"
+NEXTAUTH_URL="http://localhost:3000"
+
+# IGDB Integration
+IGDB_CLIENT_ID="your-twitch-client-id"
+IGDB_CLIENT_SECRET="your-twitch-client-secret"
+
+# Email (optional)
+EMAIL_SERVER_HOST="smtp.example.com"
+EMAIL_SERVER_PORT=587
+EMAIL_SERVER_USER="your-email"
+EMAIL_SERVER_PASSWORD="your-password"
+EMAIL_FROM="noreply@example.com"
+
+# Stripe (optional)
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_PUBLISHABLE_KEY="pk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 ```
 
-## 📁 Project Structure
+## Database Schema
 
-```
-gamingwithyou/
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   ├── (auth)/            # Authentication pages
-│   ├── games/             # Game pages
-│   ├── gamers/            # User profile pages
-│   ├── admin/             # Admin panel
-│   └── globals.css        # Global styles
-├── components/             # React components
-│   ├── ui/                # UI components
-│   └── forms/             # Form components
-├── lib/                   # Utilities and config
-│   ├── prisma.ts          # Prisma client
-│   ├── auth.ts            # NextAuth config
-│   └── utils.ts           # Utility functions
-├── prisma/                # Database schema
-│   └── schema.prisma      # Prisma schema
-└── public/                # Static assets
-```
+The application uses PostgreSQL with Prisma ORM. Key models include:
 
-## 🔧 Development Scripts
+- **User**: User accounts and profiles
+- **Game**: Game database with IGDB integration
+- **Booking**: Service bookings and scheduling
+- **FixedService**: Pre-defined services
+- **ServiceOrder**: Custom service orders
+
+## API Documentation
+
+### Authentication
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `GET /api/auth/logout` - User logout
+
+### Games
+- `GET /api/games` - List all games
+- `GET /api/games/search?q={query}` - Search games
+- `POST /api/games/sync` - Sync games from IGDB
+
+### Bookings
+- `POST /api/bookings` - Create booking
+- `GET /api/bookings` - List bookings
+- `PUT /api/bookings/{id}` - Update booking
+
+### Services
+- `POST /api/services` - Create service
+- `GET /api/services` - List services
+- `PUT /api/services/{id}` - Update service
+
+## Development
+
+### Available Scripts
 
 ```bash
 npm run dev          # Start development server
 npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint
+npm run test:igdb    # Test IGDB integration
+
+# Database
 npm run db:generate  # Generate Prisma client
 npm run db:push      # Push schema to database
 npm run db:studio    # Open Prisma Studio
-npm run db:migrate   # Run database migrations
+npm run db:migrate   # Run migrations
+npm run db:reset     # Reset database
 ```
 
-## 🤝 Contributing
+### Testing
+
+The project includes comprehensive testing for the IGDB integration:
+
+```bash
+# Run IGDB integration tests
+npm run test:igdb
+```
+
+This will test:
+- IGDB API connectivity
+- Game search and sync functionality
+- Error handling and validation
+- Cache management
+- Database operations
+
+### Code Structure
+
+```
+├── app/                    # Next.js app directory
+│   ├── api/               # API routes
+│   │   ├── auth/          # Authentication endpoints
+│   │   ├── games/         # Game management
+│   │   └── igdb/          # IGDB integration
+│   ├── admin/             # Admin pages
+│   └── (pages)/           # Public pages
+├── components/             # React components
+│   ├── ui/                # UI components
+│   └── (feature)/         # Feature components
+├── lib/                   # Utility libraries
+│   ├── igdb.ts           # IGDB service
+│   ├── gameSync.ts       # Game sync service
+│   └── prisma.ts         # Database client
+├── prisma/               # Database schema
+└── scripts/              # Utility scripts
+    └── test-igdb.js      # IGDB test script
+```
+
+## Deployment
+
+### Vercel (Recommended)
+
+1. Connect your repository to Vercel
+2. Set up environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
+
+### Docker
+
+```bash
+# Build the image
+docker build -t gamingwithyou .
+
+# Run the container
+docker run -p 3000:3000 gamingwithyou
+```
+
+## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
-## 🙏 Acknowledgments
+## Support
 
-- **Next.js Team** - For the amazing React framework
-- **Prisma Team** - For the excellent database ORM
-- **Vercel Team** - For seamless deployment
-- **Radix UI Team** - For accessible components
-- **Tailwind CSS Team** - For the utility-first CSS framework
-
-## 📞 Support
-
-- **Documentation**: [Coming Soon]
-- **Issues**: [GitHub Issues](https://github.com/yourusername/gamingwithyou/issues)
-- **Discord**: [Join our community](https://discord.gg/gamingwithyou)
-
----
-
-**Made with ❤️ by the GamingWithYou Team**
+For support and questions:
+- Check the [IGDB_SETUP.md](./IGDB_SETUP.md) for IGDB integration help
+- Review the [AUTHENTICATION_SETUP.md](./AUTHENTICATION_SETUP.md) for auth setup
+- Open an issue on GitHub for bugs or feature requests

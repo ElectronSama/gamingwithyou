@@ -11,7 +11,8 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:migrate": "prisma migrate dev",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "test:igdb": "node scripts/test-igdb.js"
   },
   "dependencies": {
     "@prisma/client": "^6.13.0",
@@ -39,6 +40,7 @@
     "framer-motion": "^12.23.0",
     "i18next": "^25.3.1",
     "i18next-browser-languagedetector": "^8.2.0",
+    "igdb-api-node": "^6.0.5",
     "input-otp": "^1.4.2",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",

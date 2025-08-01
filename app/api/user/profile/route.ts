@@ -1,0 +1,217 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+
+export async function GET(request: NextRequest) {
+  try {
+    const token = await getToken({ 
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+    
+    if (!token?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: token.email },
+      include: {
+        userGames: {
+          include: {
+            game: true
+          }
+        },
+        userLanguages: true,
+        userTags: true,
+      }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ 
+      profile: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        bio: user.bio,
+        isAdmin: user.isAdmin,
+        createdAt: user.createdAt.toISOString(),
+        userGames: user.userGames,
+        userLanguages: user.userLanguages,
+        userTags: user.userTags,
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch user profile' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const token = await getToken({ 
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+    
+    if (!token?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { bio, categories, games, languages, tags } = body;
+
+    const user = await prisma.user.findUnique({
+      where: { email: token.email }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Update bio if provided
+    if (bio !== undefined) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { bio }
+      });
+    }
+
+    // Update games if provided
+    if (games && Array.isArray(games)) {
+      // First, remove all existing user games
+      await prisma.userGame.deleteMany({
+        where: { userId: user.id }
+      });
+
+      // Then add the new games
+      for (const gameData of games) {
+        if (gameData.gameId && gameData.level) {
+          // Check if game exists
+          let game = await prisma.game.findFirst({
+            where: { 
+              OR: [
+                { igdbId: parseInt(gameData.gameId) },
+                { id: gameData.gameId }
+              ]
+            }
+          });
+          
+          // Create game if doesn't exist
+          if (!game) {
+            game = await prisma.game.create({
+              data: {
+                name: gameData.name || `Game ${gameData.gameId}`,
+                slug: `game-${gameData.gameId}`,
+                igdbId: parseInt(gameData.gameId),
+                platform: gameData.platform || null,
+                isActive: true
+              }
+            });
+          }
+          
+          // Create user game relationship
+          await prisma.userGame.create({
+            data: {
+              userId: user.id,
+              gameId: game.id,
+              level: gameData.level
+            }
+          });
+        }
+      }
+    }
+
+    // Update languages if provided
+    if (languages && Array.isArray(languages)) {
+      // First, remove all existing user languages
+      await prisma.userLanguage.deleteMany({
+        where: { userId: user.id }
+      });
+
+      // Then add the new languages
+      for (const langData of languages) {
+        if (langData.language && langData.level) {
+          await prisma.userLanguage.create({
+            data: {
+              userId: user.id,
+              language: langData.language,
+              level: langData.level
+            }
+          });
+        }
+      }
+    }
+
+         // Update tags if provided (but preserve category tags)
+     if (tags && Array.isArray(tags)) {
+       // First, remove all existing non-category user tags
+       await prisma.userTag.deleteMany({
+         where: { 
+           userId: user.id,
+           tag: {
+             not: {
+               startsWith: 'category:'
+             }
+           }
+         }
+       });
+
+       // Then add the new tags
+       for (const tag of tags) {
+         if (tag) {
+           await prisma.userTag.create({
+             data: {
+               userId: user.id,
+               tag: tag
+             }
+           });
+         }
+       }
+     }
+
+         // Update categories if provided
+     if (categories && Array.isArray(categories)) {
+       // First, remove all existing category tags
+       await prisma.userTag.deleteMany({
+         where: { 
+           userId: user.id,
+           tag: {
+             startsWith: 'category:'
+           }
+         }
+       });
+
+       // Then add the new categories
+       for (const category of categories) {
+         if (category) {
+           await prisma.userTag.create({
+             data: {
+               userId: user.id,
+               tag: `category:${category}`
+             }
+           });
+         }
+       }
+     }
+
+    return NextResponse.json({ 
+      success: true,
+      message: 'Profile updated successfully'
+    });
+
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    return NextResponse.json(
+      { error: 'Failed to update user profile' },
+      { status: 500 }
+    );
+  }
+} 
