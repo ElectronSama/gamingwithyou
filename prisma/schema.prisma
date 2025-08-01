@@ -36,6 +36,8 @@ model User {
   gameNews          GameNews[]
   gameEvents        GameEvent[]
   gameEasterEggs    GameEasterEgg[]
+  reviewsGiven      Review[] @relation("ReviewGiver")
+  reviewsReceived   Review[] @relation("ReviewReceiver")
 
 
   @@map("users")
@@ -270,4 +272,18 @@ model GameEasterEgg {
   @@map("game_easter_eggs")
 }
 
- 
+model Review {
+  id          String   @id @default(cuid())
+  reviewerId  String   // User who gives the review
+  reviewedId  String   // User who receives the review
+  rating      Int      // 1-5 stars
+  comment     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reviewer User @relation("ReviewGiver", fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewed User @relation("ReviewReceiver", fields: [reviewedId], references: [id], onDelete: Cascade)
+
+  @@unique([reviewerId, reviewedId]) // One review per user pair
+  @@map("reviews")
+}
