@@ -15,13 +15,16 @@ export async function POST(request: NextRequest) {
     console.log('1. Session test:', {
       hasToken: !!token,
       hasEmail: !!token?.email,
-      email: token?.email
+      email: token?.email,
+      tokenKeys: token ? Object.keys(token) : []
     });
     
     if (!token?.email) {
+      console.log('1. No valid session found');
       return NextResponse.json({ 
         error: 'No session found',
-        step: 'session_check'
+        step: 'session_check',
+        details: 'Token missing or invalid'
       }, { status: 401 });
     }
     
@@ -82,6 +85,7 @@ export async function POST(request: NextRequest) {
     // 5. Test games processing
     if (body.games && body.games.length > 0) {
       console.log('5. Processing games:', body.games.length);
+      console.log('5. Games data:', body.games);
       for (const gameData of body.games) {
         try {
           // Check if game exists
@@ -106,26 +110,49 @@ export async function POST(request: NextRequest) {
               }
             });
             console.log('5. Created game:', game.name);
+          } else {
+            // Update existing game with platform if provided
+            if (gameData.platform && gameData.platform !== game.platform) {
+              await prisma.game.update({
+                where: { id: game.id },
+                data: { platform: gameData.platform }
+              });
+              console.log('5. Updated game platform:', gameData.platform);
+            }
           }
           
-          // Create user game relationship
-          await prisma.userGame.upsert({
-            where: {
-              userId_gameId: {
-                userId: user.id,
-                gameId: game.id
-              }
-            },
-            update: {
-              level: gameData.level
-            },
-            create: {
-              userId: user.id,
-              gameId: game.id,
-              level: gameData.level
-            }
-          });
-          console.log('5. User game relationship created/updated');
+                     // Create user game relationship - simplified approach
+           try {
+             await prisma.userGame.create({
+               data: {
+                 userId: user.id,
+                 gameId: game.id,
+                 level: gameData.level,
+                 platform: gameData.platform || null
+               }
+             });
+             console.log('5. User game relationship created successfully');
+           } catch (createError: any) {
+             // If unique constraint violation, try to update instead
+             if (createError.code === 'P2002') {
+               console.log('5. User game already exists, updating...');
+               await prisma.userGame.updateMany({
+                 where: {
+                   userId: user.id,
+                   gameId: game.id,
+                   platform: gameData.platform || null,
+                   level: gameData.level
+                 },
+                 data: {
+                   level: gameData.level,
+                   platform: gameData.platform || null
+                 }
+               });
+               console.log('5. User game relationship updated successfully');
+             } else {
+               throw createError;
+             }
+           }
         } catch (gameError) {
           console.log('5. Game processing failed:', gameError);
           return NextResponse.json({ 
@@ -137,102 +164,112 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    // 6. Test languages processing
-    if (body.languages && body.languages.length > 0) {
-      console.log('6. Processing languages:', body.languages.length);
-      for (const langData of body.languages) {
-        if (langData.language && langData.level) {
-          try {
-            await prisma.userLanguage.upsert({
-              where: {
-                userId_language: {
-                  userId: user.id,
-                  language: langData.language
-                }
-              },
-              update: {
-                level: langData.level
-              },
-              create: {
-                userId: user.id,
-                language: langData.language,
-                level: langData.level
-              }
-            });
-            console.log('6. Language processed:', langData.language);
-          } catch (langError) {
-            console.log('6. Language processing failed:', langError);
-            return NextResponse.json({ 
-              error: 'Failed to process languages',
-              step: 'languages_processing',
-              details: langError instanceof Error ? langError.message : 'Unknown error'
-            }, { status: 500 });
-          }
-        }
-      }
-    }
+         // 6. Test languages processing
+     if (body.languages && body.languages.length > 0) {
+       console.log('6. Processing languages:', body.languages.length);
+       
+       // First, remove all existing user languages
+       await prisma.userLanguage.deleteMany({
+         where: { userId: user.id }
+       });
+       
+       // Then add the new languages
+       for (const langData of body.languages) {
+         if (langData.language && langData.level) {
+           try {
+             await prisma.userLanguage.create({
+               data: {
+                 userId: user.id,
+                 language: langData.language,
+                 level: langData.level
+               }
+             });
+             console.log('6. Language processed:', langData.language);
+           } catch (langError) {
+             console.log('6. Language processing failed:', langError);
+             return NextResponse.json({ 
+               error: 'Failed to process languages',
+               step: 'languages_processing',
+               details: langError instanceof Error ? langError.message : 'Unknown error'
+             }, { status: 500 });
+           }
+         }
+       }
+     }
     
-    // 7. Test tags processing
-    if (body.tags && body.tags.length > 0) {
-      console.log('7. Processing tags:', body.tags.length);
-      for (const tag of body.tags) {
-        if (tag) {
-          try {
-            await prisma.userTag.upsert({
-              where: {
-                userId_tag: {
-                  userId: user.id,
-                  tag: tag
-                }
-              },
-              update: {},
-              create: {
-                userId: user.id,
-                tag: tag
-              }
-            });
-            console.log('7. Tag processed:', tag);
-          } catch (tagError) {
-            console.log('7. Tag processing failed:', tagError);
-            return NextResponse.json({ 
-              error: 'Failed to process tags',
-              step: 'tags_processing',
-              details: tagError instanceof Error ? tagError.message : 'Unknown error'
-            }, { status: 500 });
-          }
-        }
-      }
-    }
-    
-    // 8. Test categories processing
-    if (body.categories && body.categories.length > 0) {
-      console.log('8. Processing categories:', body.categories.length);
-      for (const category of body.categories) {
-        try {
-          await prisma.userTag.upsert({
-            where: {
-              userId_tag: {
-                userId: user.id,
-                tag: `category:${category}`
-              }
-            },
-            update: {},
-            create: {
-              userId: user.id,
-              tag: `category:${category}`
-            }
-          });
-          console.log('8. Category processed:', category);
-        } catch (catError) {
-          console.log('8. Category processing failed:', catError);
-          return NextResponse.json({ 
-            error: 'Failed to process categories',
-            step: 'categories_processing',
-            details: catError instanceof Error ? catError.message : 'Unknown error'
-          }, { status: 500 });
-        }
-      }
-    }
+         // 7. Test tags processing
+     if (body.tags && body.tags.length > 0) {
+       console.log('7. Processing tags:', body.tags.length);
+       
+       // First, remove all existing non-category user tags
+       await prisma.userTag.deleteMany({
+         where: { 
+           userId: user.id,
+           tag: {
+             not: {
+               startsWith: 'category:'
+             }
+           }
+         }
+       });
+       
+       // Then add the new tags
+       for (const tag of body.tags) {
+         if (tag) {
+           try {
+             await prisma.userTag.create({
+               data: {
+                 userId: user.id,
+                 tag: tag
+               }
+             });
+             console.log('7. Tag processed:', tag);
+           } catch (tagError) {
+             console.log('7. Tag processing failed:', tagError);
+             return NextResponse.json({ 
+               error: 'Failed to process tags',
+               step: 'tags_processing',
+               details: tagError instanceof Error ? tagError.message : 'Unknown error'
+             }, { status: 500 });
+           }
+         }
+       }
+     }
+     
+     // 8. Test categories processing
+     if (body.categories && body.categories.length > 0) {
+       console.log('8. Processing categories:', body.categories.length);
+       
+       // First, remove all existing category tags
+       await prisma.userTag.deleteMany({
+         where: { 
+           userId: user.id,
+           tag: {
+             startsWith: 'category:'
+           }
+         }
+       });
+       
+       // Then add the new categories
+       for (const category of body.categories) {
+         try {
+           await prisma.userTag.create({
+             data: {
+               userId: user.id,
+               tag: `category:${category}`
+             }
+           });
+           console.log('8. Category processed:', category);
+         } catch (catError) {
+           console.log('8. Category processing failed:', catError);
+           return NextResponse.json({ 
+             error: 'Failed to process categories',
+             step: 'categories_processing',
+             details: catError instanceof Error ? catError.message : 'Unknown error'
+           }, { status: 500 });
+         }
+       }
+     }
     
     console.log('=== DEBUG ONBOARDING SUCCESS ===');
     

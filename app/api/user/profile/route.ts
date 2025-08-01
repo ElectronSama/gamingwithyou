@@ -56,6 +56,8 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    console.log('=== PROFILE UPDATE START ===');
+    
     const token = await getToken({ 
       req: request,
       secret: process.env.NEXTAUTH_SECRET,
@@ -67,6 +69,15 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json();
     const { bio, categories, games, languages, tags } = body;
+    
+    console.log('Received data:', {
+      hasBio: !!bio,
+      hasCategories: !!categories,
+      hasGames: !!games,
+      gamesCount: games?.length || 0,
+      hasLanguages: !!languages,
+      hasTags: !!tags
+    });
 
     const user = await prisma.user.findUnique({
       where: { email: token.email }
@@ -86,12 +97,22 @@ export async function PUT(request: NextRequest) {
 
     // Update games if provided
     if (games && Array.isArray(games)) {
-      // First, remove all existing user games
+      console.log('Processing games:', games);
+      
+      // Get current game combinations from the request
+      const currentGameCombinations = games.map(g => ({
+        gameId: g.gameId,
+        platform: g.platform || null,
+        level: g.level
+      })).filter(g => g.gameId && g.level);
+      console.log('Current game combinations:', currentGameCombinations);
+      
+      // Remove all existing user games for this user
       await prisma.userGame.deleteMany({
         where: { userId: user.id }
       });
 
-      // Then add the new games
+      // Process each game (create or update)
       for (const gameData of games) {
         if (gameData.gameId && gameData.level) {
           // Check if game exists
@@ -117,14 +138,27 @@ export async function PUT(request: NextRequest) {
             });
           }
           
-          // Create user game relationship
-          await prisma.userGame.create({
-            data: {
+          // Create or update user game relationship
+          // First, try to delete any existing record with the same game/platform/level
+          await prisma.userGame.deleteMany({
+            where: {
               userId: user.id,
               gameId: game.id,
+              platform: gameData.platform || null,
               level: gameData.level
             }
           });
+          
+          // Then create the new record
+          const userGame = await prisma.userGame.create({
+            data: {
+              userId: user.id,
+              gameId: game.id,
+              level: gameData.level,
+              platform: gameData.platform || null
+            }
+          });
+          console.log('UserGame created:', userGame);
         }
       }
     }
@@ -202,15 +236,21 @@ export async function PUT(request: NextRequest) {
        }
      }
 
+    console.log('=== PROFILE UPDATE SUCCESS ===');
     return NextResponse.json({ 
       success: true,
       message: 'Profile updated successfully'
     });
 
   } catch (error) {
+    console.error('=== PROFILE UPDATE ERROR ===');
     console.error('Error updating user profile:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
     return NextResponse.json(
-      { error: 'Failed to update user profile' },
+      { error: 'Failed to update user profile', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

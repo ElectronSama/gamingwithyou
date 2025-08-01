@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { 
   User, 
   Mail, 
@@ -17,7 +19,11 @@ import {
   Tags, 
   Edit,
   Plus,
-  Loader2
+  Loader2,
+  Settings,
+  Lock,
+  Save,
+  X
 } from "lucide-react"
 
 interface UserProfile {
@@ -30,6 +36,7 @@ interface UserProfile {
   userGames: Array<{
     id: string
     level: string
+    platform?: string | null
     game: {
       id: string
       name: string
@@ -54,6 +61,18 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("overview")
+  
+  // Account settings states
+  const [editingAccount, setEditingAccount] = useState(false)
+  const [savingAccount, setSavingAccount] = useState(false)
+  const [accountForm, setAccountForm] = useState({
+    username: "",
+    email: "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  })
+  const [accountErrors, setAccountErrors] = useState<{[key: string]: string}>({})
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -79,6 +98,100 @@ export default function ProfilePage() {
       console.error('Error fetching profile:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const startEditingAccount = () => {
+    if (profile) {
+      setAccountForm({
+        username: profile.username,
+        email: profile.email,
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+      })
+      setAccountErrors({})
+      setEditingAccount(true)
+    }
+  }
+
+  const cancelEditingAccount = () => {
+    setEditingAccount(false)
+    setAccountForm({
+      username: "",
+      email: "",
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: ""
+    })
+    setAccountErrors({})
+  }
+
+  const validateAccountForm = () => {
+    const errors: {[key: string]: string} = {}
+
+    if (!accountForm.username.trim()) {
+      errors.username = "Username is required"
+    } else if (accountForm.username.length < 3) {
+      errors.username = "Username must be at least 3 characters"
+    } else if (!/^[a-zA-Z0-9_]+$/.test(accountForm.username)) {
+      errors.username = "Username can only contain letters, numbers, and underscores"
+    }
+
+    if (!accountForm.email.trim()) {
+      errors.email = "Email is required"
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(accountForm.email)) {
+      errors.email = "Please enter a valid email address"
+    }
+
+    if (accountForm.newPassword && accountForm.newPassword.length < 6) {
+      errors.newPassword = "Password must be at least 6 characters"
+    }
+
+    if (accountForm.newPassword && accountForm.newPassword !== accountForm.confirmPassword) {
+      errors.confirmPassword = "Passwords do not match"
+    }
+
+    setAccountErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
+  const handleAccountSave = async () => {
+    if (!validateAccountForm()) return
+
+    setSavingAccount(true)
+    try {
+      const response = await fetch('/api/user/account', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: accountForm.username,
+          email: accountForm.email,
+          currentPassword: accountForm.currentPassword || undefined,
+          newPassword: accountForm.newPassword || undefined
+        }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success) {
+          setEditingAccount(false)
+          fetchProfile() // Refresh profile data
+          alert('Account updated successfully!')
+        } else {
+          setAccountErrors(data.errors || {})
+        }
+      } else {
+        const errorData = await response.json()
+        setAccountErrors(errorData.errors || {})
+      }
+    } catch (error) {
+      console.error('Error updating account:', error)
+      setAccountErrors({ general: 'Failed to update account. Please try again.' })
+    } finally {
+      setSavingAccount(false)
     }
   }
 
@@ -112,7 +225,7 @@ export default function ProfilePage() {
 
         <div className="max-w-4xl mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 bg-white/10 border border-white/20">
+            <TabsList className="grid w-full grid-cols-5 bg-white/10 border border-white/20">
               <TabsTrigger value="overview" className="text-white data-[state=active]:bg-green-600">
                 Overview
               </TabsTrigger>
@@ -124,6 +237,9 @@ export default function ProfilePage() {
               </TabsTrigger>
               <TabsTrigger value="edit" className="text-white data-[state=active]:bg-green-600">
                 Edit Profile
+              </TabsTrigger>
+              <TabsTrigger value="account" className="text-white data-[state=active]:bg-green-600">
+                Account Settings
               </TabsTrigger>
             </TabsList>
 
@@ -193,8 +309,16 @@ export default function ProfilePage() {
                         <span className="text-white">{profile?.userLanguages.length || 0}</span>
                       </div>
                       <div className="flex justify-between">
+                        <span className="text-gray-400">Categories</span>
+                        <span className="text-white">
+                          {profile?.userTags.filter(tag => tag.tag.startsWith('category:')).length || 0}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
                         <span className="text-gray-400">Tags</span>
-                        <span className="text-white">{profile?.userTags.length || 0}</span>
+                        <span className="text-white">
+                          {profile?.userTags.filter(tag => !tag.tag.startsWith('category:')).length || 0}
+                        </span>
                       </div>
                     </CardContent>
                   </Card>
@@ -214,28 +338,68 @@ export default function ProfilePage() {
                 <CardContent>
                   {profile?.userGames && profile.userGames.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {profile.userGames.map((userGame) => (
-                        <Card key={userGame.id} className="gaming-card">
-                          <CardHeader>
-                            <CardTitle className="text-white text-lg">{userGame.game.name}</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="flex items-center justify-between">
-                              <div className="text-gray-400 text-sm">
-                                {userGame.game.genre} • {userGame.game.platform}
+                      {(() => {
+                        // Group games by game ID and collect all platforms
+                        const groupedGames = profile.userGames.reduce((acc, userGame) => {
+                          const gameId = userGame.game.id;
+                          if (!acc[gameId]) {
+                            acc[gameId] = {
+                              game: userGame.game,
+                              entries: []
+                            };
+                          }
+                          
+                          // Add this platform/level combination if it's not already added
+                          const platform = userGame.platform || userGame.game.platform || 'Unknown Platform';
+                          const existingEntry = acc[gameId].entries.find(entry => 
+                            entry.platform === platform && entry.level === userGame.level
+                          );
+                          
+                          if (!existingEntry) {
+                            acc[gameId].entries.push({
+                              platform: platform,
+                              level: userGame.level
+                            });
+                          }
+                          
+                          return acc;
+                        }, {} as Record<string, { game: any, entries: Array<{ platform: string | null, level: string }> }>);
+
+                        // Debug: Log the userGames data to see what platforms are saved
+                        console.log('UserGames data:', profile.userGames);
+                        console.log('Grouped games:', groupedGames);
+                        
+                        return Object.values(groupedGames).map((groupedGame, index) => (
+                          <Card key={`${groupedGame.game.id}-${index}`} className="gaming-card">
+                            <CardHeader>
+                              <CardTitle className="text-white text-lg">{groupedGame.game.name}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="space-y-3">
+                                {/* Remove duplicates by platform and level combination */}
+                                {Array.from(new Set(groupedGame.entries.map(entry => `${entry.platform}-${entry.level}`))).map((uniqueKey, entryIndex) => {
+                                  const [platform, level] = uniqueKey.split('-');
+                                  return (
+                                    <div key={`${groupedGame.game.id}-entry-${entryIndex}`} className="flex items-center justify-between">
+                                      <div className="text-gray-400 text-sm">
+                                        {groupedGame.game.genre} • {platform} • {level}
+                                      </div>
+                                      <Badge className={
+                                        level === 'beginner' ? 'bg-green-600/20 text-green-300 border-green-500/30' :
+                                        level === 'intermediate' ? 'bg-yellow-600/20 text-yellow-300 border-yellow-500/30' :
+                                        level === 'advanced' ? 'bg-orange-600/20 text-orange-300 border-orange-500/30' :
+                                        'bg-red-600/20 text-red-300 border-red-500/30'
+                                      }>
+                                        {level}
+                                      </Badge>
+                                    </div>
+                                  );
+                                })}
                               </div>
-                              <Badge className={
-                                userGame.level === 'beginner' ? 'bg-green-600/20 text-green-300 border-green-500/30' :
-                                userGame.level === 'intermediate' ? 'bg-yellow-600/20 text-yellow-300 border-yellow-500/30' :
-                                userGame.level === 'advanced' ? 'bg-orange-600/20 text-orange-300 border-orange-500/30' :
-                                'bg-red-600/20 text-red-300 border-red-500/30'
-                              }>
-                                {userGame.level}
-                              </Badge>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
+                            </CardContent>
+                          </Card>
+                        ));
+                      })()}
                     </div>
                   ) : (
                     <div className="text-center py-8">
@@ -266,8 +430,8 @@ export default function ProfilePage() {
                 <CardContent>
                   {profile?.userLanguages && profile.userLanguages.length > 0 ? (
                     <div className="space-y-4">
-                      {profile.userLanguages.map((userLang) => (
-                        <div key={userLang.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                      {profile.userLanguages.map((userLang, index) => (
+                        <div key={`${userLang.id}-${index}`} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                           <span className="text-white font-medium">{userLang.language}</span>
                           <Badge className="bg-blue-600/20 text-blue-300 border-blue-500/30">
                             {userLang.level}
@@ -325,6 +489,164 @@ export default function ProfilePage() {
                       </Button>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Account Settings Tab */}
+            <TabsContent value="account" className="mt-8">
+              <Card className="gaming-card">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Settings className="h-6 w-6" />
+                    Account Settings
+                  </CardTitle>
+                  <CardDescription className="text-gray-300">
+                    Update your account information, email, and password
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {!editingAccount ? (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-400">Username</span>
+                            <span className="text-white">{profile?.username}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-400">Email</span>
+                            <span className="text-white">{profile?.email}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-400">Password</span>
+                            <span className="text-white">••••••••</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        className="gaming-button"
+                        onClick={startEditingAccount}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit Account Settings
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      {accountErrors.general && (
+                        <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
+                          <p className="text-red-300 text-sm">{accountErrors.general}</p>
+                        </div>
+                      )}
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="username" className="text-white">Username</Label>
+                          <Input
+                            id="username"
+                            value={accountForm.username}
+                            onChange={(e) => setAccountForm(prev => ({ ...prev, username: e.target.value }))}
+                            className="bg-white/10 border-white/20 text-white placeholder-gray-400"
+                            placeholder="Enter username"
+                          />
+                          {accountErrors.username && (
+                            <p className="text-red-400 text-xs">{accountErrors.username}</p>
+                          )}
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="email" className="text-white">Email</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={accountForm.email}
+                            onChange={(e) => setAccountForm(prev => ({ ...prev, email: e.target.value }))}
+                            className="bg-white/10 border-white/20 text-white placeholder-gray-400"
+                            placeholder="Enter email"
+                          />
+                          {accountErrors.email && (
+                            <p className="text-red-400 text-xs">{accountErrors.email}</p>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="currentPassword" className="text-white">Current Password</Label>
+                          <Input
+                            id="currentPassword"
+                            type="password"
+                            value={accountForm.currentPassword}
+                            onChange={(e) => setAccountForm(prev => ({ ...prev, currentPassword: e.target.value }))}
+                            className="bg-white/10 border-white/20 text-white placeholder-gray-400"
+                            placeholder="Enter current password (required for changes)"
+                          />
+                          {accountErrors.currentPassword && (
+                            <p className="text-red-400 text-xs">{accountErrors.currentPassword}</p>
+                          )}
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="newPassword" className="text-white">New Password</Label>
+                            <Input
+                              id="newPassword"
+                              type="password"
+                              value={accountForm.newPassword}
+                              onChange={(e) => setAccountForm(prev => ({ ...prev, newPassword: e.target.value }))}
+                              className="bg-white/10 border-white/20 text-white placeholder-gray-400"
+                              placeholder="Enter new password (optional)"
+                            />
+                            {accountErrors.newPassword && (
+                              <p className="text-red-400 text-xs">{accountErrors.newPassword}</p>
+                            )}
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="confirmPassword" className="text-white">Confirm Password</Label>
+                            <Input
+                              id="confirmPassword"
+                              type="password"
+                              value={accountForm.confirmPassword}
+                              onChange={(e) => setAccountForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                              className="bg-white/10 border-white/20 text-white placeholder-gray-400"
+                              placeholder="Confirm new password"
+                            />
+                            {accountErrors.confirmPassword && (
+                              <p className="text-red-400 text-xs">{accountErrors.confirmPassword}</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-3">
+                        <Button 
+                          className="gaming-button"
+                          onClick={handleAccountSave}
+                          disabled={savingAccount}
+                        >
+                          {savingAccount ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <Save className="h-4 w-4 mr-2" />
+                          )}
+                          Save Changes
+                        </Button>
+                        
+                        <Button 
+                          variant="outline"
+                          className="border-white/20 text-white hover:bg-white/10"
+                          onClick={cancelEditingAccount}
+                          disabled={savingAccount}
+                        >
+                          <X className="h-4 w-4 mr-2" />
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

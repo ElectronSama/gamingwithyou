@@ -54,15 +54,16 @@ model UserLanguage {
 }
 
 model UserGame {
-  id     String @id @default(cuid())
-  userId String
-  gameId String
-  level  String // beginner, intermediate, advanced, expert
+  id       String @id @default(cuid())
+  userId   String
+  gameId   String
+  level    String // beginner, intermediate, advanced, expert
+  platform String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, gameId])
+  @@unique([userId, gameId, platform, level])
   @@map("user_games")
 }
 
