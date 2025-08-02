@@ -397,8 +397,8 @@ export default function GamesPage() {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredGames.map((game) => (
-                  <Card key={game.id} className="gaming-card hover:transform hover:scale-105 transition-all duration-300">
-                    <CardHeader>
+                  <Card key={game.id} className="gaming-card hover:transform hover:scale-105 transition-all duration-300 flex flex-col h-full">
+                    <CardHeader className="flex-shrink-0">
                       <div className="aspect-video bg-gradient-to-br from-green-600 to-green-700 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
                         {game.igdbCoverUrl ? (
                           <img 
@@ -418,8 +418,8 @@ export default function GamesPage() {
                         )}
                       </div>
                       <div className="flex justify-between items-start mb-2">
-                        <CardTitle className="text-white text-xl">{game.name}</CardTitle>
-                        <div className="flex items-center gap-1">
+                        <CardTitle className="text-white text-xl line-clamp-2">{game.name}</CardTitle>
+                        <div className="flex items-center gap-1 flex-shrink-0">
                           <Star className="h-4 w-4 text-yellow-400 fill-current" />
                           <span className="text-white text-sm">
                             {game.igdbRating ? game.igdbRating.toFixed(1) : game.rating?.toFixed(1) || 'N/A'}
@@ -427,20 +427,7 @@ export default function GamesPage() {
                         </div>
                       </div>
                     </CardHeader>
-                    <CardContent>
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {game.genre && (
-                          <Badge variant="secondary" className="bg-green-600/20 text-green-300 border-green-500/30">
-                            {game.genre}
-                          </Badge>
-                        )}
-                        {game.platform && (
-                          <Badge variant="secondary" className="bg-blue-600/20 text-blue-300 border-blue-500/30">
-                            {game.platform}
-                          </Badge>
-                        )}
-                      </div>
-                      
+                    <CardContent className="flex flex-col flex-1">
                       <div className="flex items-center justify-between text-sm text-gray-400 mb-4">
                         {game.igdbRatingCount && (
                           <div className="flex items-center gap-1">
@@ -456,7 +443,7 @@ export default function GamesPage() {
                         )}
                       </div>
 
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 mt-auto">
                         <Button asChild className="flex-1 gaming-button">
                           <Link href={`/games/${game.slug}`}>
                             View Details

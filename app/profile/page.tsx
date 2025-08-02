@@ -9,13 +9,13 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { 
   User, 
   Mail, 
   Calendar, 
   Shield, 
   Gamepad2, 
-  Languages, 
   Tags, 
   Edit,
   Plus,
@@ -73,6 +73,10 @@ export default function ProfilePage() {
     confirmPassword: ""
   })
   const [accountErrors, setAccountErrors] = useState<{[key: string]: string}>({})
+  
+  // Modal states
+  const [selectedGame, setSelectedGame] = useState<any>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -225,15 +229,12 @@ export default function ProfilePage() {
 
         <div className="max-w-4xl mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5 bg-white/10 border border-white/20">
+            <TabsList className="grid w-full grid-cols-4 bg-white/10 border border-white/20">
               <TabsTrigger value="overview" className="text-white data-[state=active]:bg-green-600">
                 Overview
               </TabsTrigger>
               <TabsTrigger value="games" className="text-white data-[state=active]:bg-green-600">
                 Games
-              </TabsTrigger>
-              <TabsTrigger value="languages" className="text-white data-[state=active]:bg-green-600">
-                Languages
               </TabsTrigger>
               <TabsTrigger value="edit" className="text-white data-[state=active]:bg-green-600">
                 Edit Profile
@@ -245,8 +246,8 @@ export default function ProfilePage() {
 
             {/* Overview Tab */}
             <TabsContent value="overview" className="mt-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="lg:col-span-1">
                   <Card className="gaming-card">
                     <CardHeader>
                       <CardTitle className="text-white flex items-center gap-2">
@@ -303,10 +304,6 @@ export default function ProfilePage() {
                       <div className="flex justify-between">
                         <span className="text-gray-400">Games</span>
                         <span className="text-white">{profile?.userGames.length || 0}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Languages</span>
-                        <span className="text-white">{profile?.userLanguages.length || 0}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Categories</span>
@@ -375,26 +372,21 @@ export default function ProfilePage() {
                               <CardTitle className="text-white text-lg">{groupedGame.game.name}</CardTitle>
                             </CardHeader>
                             <CardContent>
-                              <div className="space-y-3">
-                                {/* Remove duplicates by platform and level combination */}
-                                {Array.from(new Set(groupedGame.entries.map(entry => `${entry.platform}-${entry.level}`))).map((uniqueKey, entryIndex) => {
-                                  const [platform, level] = uniqueKey.split('-');
-                                  return (
-                                    <div key={`${groupedGame.game.id}-entry-${entryIndex}`} className="flex items-center justify-between">
-                                      <div className="text-gray-400 text-sm">
-                                        {groupedGame.game.genre} • {platform} • {level}
-                                      </div>
-                                      <Badge className={
-                                        level === 'beginner' ? 'bg-green-600/20 text-green-300 border-green-500/30' :
-                                        level === 'intermediate' ? 'bg-yellow-600/20 text-yellow-300 border-yellow-500/30' :
-                                        level === 'advanced' ? 'bg-orange-600/20 text-orange-300 border-orange-500/30' :
-                                        'bg-red-600/20 text-red-300 border-red-500/30'
-                                      }>
-                                        {level}
-                                      </Badge>
-                                    </div>
-                                  );
-                                })}
+                              <div className="flex justify-between items-center">
+                                <div className="text-gray-400 text-sm">
+                                  {groupedGame.game.genre} • {groupedGame.entries.length} platform(s)
+                                </div>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="border-white/20 text-white hover:bg-white/10"
+                                  onClick={() => {
+                                    setSelectedGame(groupedGame)
+                                    setIsModalOpen(true)
+                                  }}
+                                >
+                                  View
+                                </Button>
                               </div>
                             </CardContent>
                           </Card>
@@ -418,43 +410,7 @@ export default function ProfilePage() {
               </Card>
             </TabsContent>
 
-            {/* Languages Tab */}
-            <TabsContent value="languages" className="mt-8">
-              <Card className="gaming-card">
-                <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <Languages className="h-6 w-6" />
-                    Languages
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {profile?.userLanguages && profile.userLanguages.length > 0 ? (
-                    <div className="space-y-4">
-                      {profile.userLanguages.map((userLang, index) => (
-                        <div key={`${userLang.id}-${index}`} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                          <span className="text-white font-medium">{userLang.language}</span>
-                          <Badge className="bg-blue-600/20 text-blue-300 border-blue-500/30">
-                            {userLang.level}
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <Languages className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-400">No languages added yet.</p>
-                      <Button 
-                        className="mt-4 gaming-button"
-                        onClick={() => router.push('/onboarding')}
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Languages
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+
 
             {/* Edit Profile Tab */}
             <TabsContent value="edit" className="mt-8">
@@ -653,6 +609,59 @@ export default function ProfilePage() {
           </Tabs>
         </div>
       </div>
+      
+      {/* Game Details Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="bg-slate-900 border-white/20 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-white">
+              {selectedGame?.game.name}
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Platform and skill levels
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedGame && (
+            <div className="space-y-4">
+              <div className="space-y-3">
+                {Array.from(new Set(selectedGame.entries.map((entry: any) => `${entry.platform}-${entry.level}`))).map((uniqueKey: string, entryIndex: number) => {
+                  const [platform, level] = uniqueKey.split('-');
+                  return (
+                    <div key={`modal-${selectedGame.game.id}-entry-${entryIndex}`} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <div>
+                          <div className="text-white font-medium">{platform}</div>
+                          <div className="text-gray-400 text-sm">{selectedGame.game.genre}</div>
+                        </div>
+                      </div>
+                      <Badge className={
+                        level === 'beginner' ? 'bg-green-600/20 text-green-300 border-green-500/30' :
+                        level === 'intermediate' ? 'bg-yellow-600/20 text-yellow-300 border-yellow-500/30' :
+                        level === 'advanced' ? 'bg-orange-600/20 text-orange-300 border-orange-500/30' :
+                        'bg-red-600/20 text-red-300 border-red-500/30'
+                      }>
+                        {level}
+                      </Badge>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              <div className="flex justify-end pt-4">
+                <Button
+                  variant="outline"
+                  className="border-white/20 text-white hover:bg-white/10"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 } 

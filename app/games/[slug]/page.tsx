@@ -18,7 +18,8 @@ import {
   Users as PlayersIcon,
   Globe,
   Video,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Trophy
 } from "lucide-react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
@@ -55,6 +56,8 @@ export default function GameDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("overview")
+  const [players, setPlayers] = useState<any[]>([])
+  const [playersLoading, setPlayersLoading] = useState(false)
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -82,6 +85,37 @@ export default function GameDetailPage() {
 
     fetchGame()
   }, [slug])
+
+  // Fetch players when tab changes to players
+  useEffect(() => {
+    const fetchPlayers = async () => {
+      if (activeTab === "players" && game) {
+        try {
+          setPlayersLoading(true)
+          console.log('Fetching players for game:', game.name)
+          const response = await fetch(`/api/games/players?gameName=${encodeURIComponent(game.name)}`)
+          console.log('API response status:', response.status)
+          
+          if (response.ok) {
+            const data = await response.json()
+            console.log('Players data:', data)
+            setPlayers(data.players || [])
+          } else {
+            const errorData = await response.json()
+            console.error('Failed to fetch players:', errorData)
+            setPlayers([]) // Set empty array on error
+          }
+        } catch (error) {
+          console.error('Error fetching players:', error)
+          setPlayers([]) // Set empty array on network error
+        } finally {
+          setPlayersLoading(false)
+        }
+      }
+    }
+
+    fetchPlayers()
+  }, [activeTab, game])
 
   if (loading) {
     return (
@@ -203,13 +237,15 @@ export default function GameDetailPage() {
                    ))}
                  </div>
 
-                                 {/* Action Buttons */}
-                 <div className="flex flex-wrap gap-4">
-                   <Button className="gaming-button">
-                     <Play className="h-4 w-4 mr-2" />
-                     Find Players
-                   </Button>
-                 </div>
+                                                   {/* Action Buttons */}
+                  <div className="flex flex-wrap gap-4">
+                    <Button asChild className="gaming-button">
+                      <Link href={`/games/${slug}/leaderboard`}>
+                        <Trophy className="h-4 w-4 mr-2" />
+                        Leaderboard
+                      </Link>
+                    </Button>
+                  </div>
               </div>
             </div>
           </div>
@@ -220,7 +256,7 @@ export default function GameDetailPage() {
       <section className="py-8">
         <div className="container mx-auto px-4">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 bg-white/10 border border-white/20">
+            <TabsList className="grid w-full grid-cols-5 bg-white/10 border border-white/20">
               <TabsTrigger value="overview" className="text-white data-[state=active]:bg-green-600">
                 Overview
               </TabsTrigger>
@@ -229,6 +265,9 @@ export default function GameDetailPage() {
               </TabsTrigger>
               <TabsTrigger value="related" className="text-white data-[state=active]:bg-green-600">
                 Related
+              </TabsTrigger>
+              <TabsTrigger value="players" className="text-white data-[state=active]:bg-green-600">
+                Players
               </TabsTrigger>
               <TabsTrigger value="community" className="text-white data-[state=active]:bg-green-600">
                 Community
@@ -478,6 +517,109 @@ export default function GameDetailPage() {
                     </CardContent>
                   </Card>
                 )}
+              </div>
+            </TabsContent>
+
+                         {/* Players Tab */}
+             <TabsContent value="players" className="mt-8">
+               <div className="space-y-8">
+                 {playersLoading ? (
+                   <div className="flex justify-center items-center py-12">
+                     <Loader2 className="h-8 w-8 animate-spin text-green-400" />
+                   </div>
+                                   ) : players.length > 0 ? (
+                  <Card className="gaming-card">
+                    <CardHeader>
+                      <CardTitle className="text-white flex items-center gap-2">
+                        <PlayersIcon className="h-5 w-5" />
+                        Players ({players.length})
+                      </CardTitle>
+                      <CardDescription className="text-gray-400">
+                        Users who are playing {game.name}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {players.map((player) => (
+                          <Card key={player.id} className="gaming-card hover:transform hover:scale-105 transition-all duration-300">
+                            <CardHeader>
+                              <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center">
+                                  {player.avatar ? (
+                                    <img 
+                                      src={player.avatar} 
+                                      alt={player.username}
+                                      className="w-10 h-10 rounded-full object-cover"
+                                    />
+                                  ) : (
+                                    <span className="text-white font-semibold text-lg">
+                                      {player.username.charAt(0).toUpperCase()}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex-1">
+                                  <CardTitle className="text-white text-lg">{player.username}</CardTitle>
+                                  {player.location && (
+                                    <p className="text-gray-400 text-sm">{player.location}</p>
+                                  )}
+                                </div>
+                              </div>
+                            </CardHeader>
+                            <CardContent>
+                              {player.bio && (
+                                <p className="text-gray-300 text-sm mb-4 line-clamp-2">
+                                  {player.bio}
+                                </p>
+                              )}
+                                                             {player.platforms && player.platforms.length > 0 && (
+                                 <div className="flex items-center gap-2 mb-4">
+                                   {player.platforms.map((platform, index) => (
+                                     <Badge key={index} variant="secondary" className="bg-blue-600/20 text-blue-300 border-blue-500/30">
+                                       {platform}
+                                     </Badge>
+                                   ))}
+                                 </div>
+                               )}
+                              <div className="flex gap-2">
+                                <Button asChild className="flex-1 gaming-button">
+                                  <Link href={`/profile/${player.username}`}>
+                                    View Profile
+                                  </Link>
+                                </Button>
+                                <Button asChild variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10">
+                                  <Link href={`/profile/${player.username}`}>
+                                    Message
+                                  </Link>
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                                 ) : (
+                   <Card className="gaming-card">
+                     <CardContent className="text-center py-12">
+                       <PlayersIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                       <h3 className="text-xl font-semibold text-white mb-2">Players Feature Coming Soon</h3>
+                       <p className="text-gray-400 mb-6">
+                         This feature is currently under development. Soon you'll be able to see other players who are playing {game.name}.
+                       </p>
+                       <div className="space-y-4">
+                         <Button className="gaming-button">
+                           <Users className="h-4 w-4 mr-2" />
+                           Add Game to Profile
+                         </Button>
+                         <div className="text-sm text-gray-500">
+                           <p>• Connect your gaming profiles</p>
+                           <p>• Find players for multiplayer games</p>
+                           <p>• Join gaming communities</p>
+                         </div>
+                       </div>
+                     </CardContent>
+                   </Card>
+                 )}
               </div>
             </TabsContent>
 
