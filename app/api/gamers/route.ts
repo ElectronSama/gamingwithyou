@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
         return {
           id: user.id,
           username: user.username,
-          avatar: user.avatar || '/avatars/default.jpg',
+          avatar: user.avatar || null,
           bio: user.bio || 'No bio available',
           games: user.userGames.map(ug => ug.game.name),
           languages: user.userLanguages.map(ul => ul.language),

@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('=== PROFILE GET REQUEST ===');
+    console.log('=== PROFILE DATA GET REQUEST ===');
     
     const session = await getServerSession(authOptions);
     
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    console.log('=== PROFILE UPDATE START ===');
+    console.log('=== PROFILE DATA UPDATE START ===');
     
     const session = await getServerSession(authOptions);
     

@@ -245,8 +245,16 @@ export default function UserProfilePage() {
           </Button>
           
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center">
-              <User className="h-10 w-10 text-white" />
+            <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center">
+              {profile.avatar ? (
+                <img 
+                  src={profile.avatar} 
+                  alt={`${profile.username}'s profile`} 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="h-10 w-10 text-white" />
+              )}
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white">{profile.username}</h1>
@@ -561,12 +569,20 @@ export default function UserProfilePage() {
                         {reviewsData.reviews.map((review) => (
                           <Card key={review.id} className="bg-white/5 border-white/20">
                             <CardContent className="p-4">
-                              <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center">
-                                      <User className="h-4 w-4 text-white" />
-                                    </div>
+                                                              <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center">
+                                        {review.reviewer.avatar ? (
+                                          <img 
+                                            src={review.reviewer.avatar} 
+                                            alt={`${review.reviewer.username}'s profile`} 
+                                            className="w-full h-full object-cover"
+                                          />
+                                        ) : (
+                                          <User className="h-4 w-4 text-white" />
+                                        )}
+                                      </div>
                                     <span className="text-white font-medium">{review.reviewer.username}</span>
                                     <div className="flex gap-1">
                                       {[1, 2, 3, 4, 5].map((star) => (

@@ -7,6 +7,25 @@ export async function POST(request: NextRequest) {
   try {
     console.log('=== DEBUG ONBOARDING START ===');
     
+    // Check environment variables
+    if (!process.env.NEXTAUTH_SECRET) {
+      console.log('ERROR: NEXTAUTH_SECRET not set');
+      return NextResponse.json({ 
+        error: 'Server configuration error',
+        step: 'env_check',
+        details: 'NEXTAUTH_SECRET environment variable not set'
+      }, { status: 500 });
+    }
+    
+    if (!process.env.POSTGRES_URL) {
+      console.log('ERROR: POSTGRES_URL not set');
+      return NextResponse.json({ 
+        error: 'Server configuration error',
+        step: 'env_check',
+        details: 'POSTGRES_URL environment variable not set'
+      }, { status: 500 });
+    }
+    
     // 1. Test session - use getToken for JWT strategy
     const token = await getToken({ 
       req: request,
@@ -34,6 +53,7 @@ export async function POST(request: NextRequest) {
       body = await request.json();
       console.log('2. Request body parsed successfully:', {
         hasBio: !!body.bio,
+        hasProfilePictureUrl: !!body.profilePictureUrl,
         hasCategories: !!body.categories,
         hasGames: !!body.games,
         hasLanguages: !!body.languages,
@@ -64,18 +84,22 @@ export async function POST(request: NextRequest) {
       }, { status: 404 });
     }
     
-    // 4. Test bio update
-    if (body.bio) {
+    // 4. Test bio and profile picture update
+    if (body.bio || body.profilePictureUrl) {
       try {
+        const updateData: any = {};
+        if (body.bio) updateData.bio = body.bio;
+        if (body.profilePictureUrl) updateData.avatar = body.profilePictureUrl; // Changed from profilePicture to avatar
+        
         await prisma.user.update({
           where: { id: user.id },
-          data: { bio: body.bio }
+          data: updateData
         });
-        console.log('4. Bio updated successfully');
+        console.log('4. Bio and profile picture updated successfully');
       } catch (bioError) {
-        console.log('4. Bio update failed:', bioError);
+        console.log('4. Bio/profile picture update failed:', bioError);
         return NextResponse.json({ 
-          error: 'Failed to update bio',
+          error: 'Failed to update bio/profile picture',
           step: 'bio_update',
           details: bioError instanceof Error ? bioError.message : 'Unknown error'
         }, { status: 500 });
@@ -279,6 +303,7 @@ export async function POST(request: NextRequest) {
       debug: {
         userId: user.id,
         bioUpdated: !!body.bio,
+        profilePictureUpdated: !!body.profilePictureUrl,
         gamesProcessed: body.games?.length || 0,
         languagesProcessed: body.languages?.length || 0,
         tagsProcessed: body.tags?.length || 0,

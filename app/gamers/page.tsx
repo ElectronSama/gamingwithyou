@@ -16,7 +16,8 @@ import {
   RefreshCw,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Trophy
 } from "lucide-react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
@@ -192,8 +193,9 @@ export default function GamersPage() {
             </div>
             <div className="mt-6 md:mt-0">
               <Button asChild size="lg" className="gaming-button">
-                <Link href="/create-listing">
-                  Create Listing
+                <Link href="/leaderboard">
+                  <Trophy className="h-5 w-5 mr-2" />
+                  Leaderboard
                 </Link>
               </Button>
             </div>
@@ -211,18 +213,18 @@ export default function GamersPage() {
               {/* Search Bar */}
               <div className="relative group w-full">
                 <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
-                <div className="relative flex items-center w-full h-12 sm:h-14 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg hover:shadow-green-500/20 transition-all duration-300 group-hover:border-green-400/30">
-                  <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 ml-3 sm:ml-4 mr-2 sm:mr-3 group-hover:text-green-400 transition-colors duration-200" />
+                <div className="relative flex items-center w-full h-10 sm:h-11 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl shadow-lg hover:shadow-green-500/20 transition-all duration-300 group-hover:border-green-400/30">
+                  <Search className="h-4 w-4 text-gray-400 ml-3 mr-2 group-hover:text-green-400 transition-colors duration-200" />
                   <input
                     type="text"
                     placeholder="Search gamers by username, bio, games, or tags..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch(1)}
-                    className="flex-1 bg-transparent text-white placeholder-gray-400 focus:outline-none text-sm sm:text-base font-medium"
+                    className="flex-1 bg-transparent text-white placeholder-gray-400 focus:outline-none text-sm font-medium"
                   />
-                  <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 mr-3 sm:mr-4 bg-green-500/20 rounded-full border border-green-400/30">
-                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <div className="flex items-center gap-1 px-2 py-1 mr-3 bg-green-500/20 rounded-full border border-green-400/30">
+                    <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
                     <span className="text-xs text-green-200 font-medium hidden sm:inline">LIVE</span>
                   </div>
                 </div>
@@ -232,12 +234,12 @@ export default function GamersPage() {
               <Button 
                 onClick={() => handleSearch(1)}
                 disabled={loading}
-                className="w-full sm:w-auto h-12 sm:h-14 px-4 sm:px-6 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold rounded-2xl shadow-lg hover:shadow-green-500/30 transition-all duration-300 border-0 hover:scale-105 text-sm sm:text-base"
+                className="w-full sm:w-auto h-10 sm:h-11 px-4 sm:px-6 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-green-500/30 transition-all duration-300 border-0 hover:scale-105 text-sm"
               >
                 {loading ? (
-                  <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin mr-1 sm:mr-2" />
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : (
-                  <Search className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+                  <Search className="h-4 w-4 mr-2" />
                 )}
                 <span>Search</span>
               </Button>
@@ -371,11 +373,28 @@ export default function GamersPage() {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {gamers.map((gamer) => (
-                  <Card key={gamer.id} className="gaming-card hover:transform hover:scale-105 transition-all duration-300">
+                  <Card 
+                    key={gamer.id} 
+                    className="gaming-card hover:transform hover:scale-105 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-green-500/20"
+                    onClick={() => window.location.href = `/profile/${gamer.username}`}
+                  >
                     <CardHeader>
                       <div className="flex items-center gap-4 mb-4">
-                        <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center">
-                          <Users className="h-8 w-8 text-white" />
+                        <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center">
+                          {gamer.avatar ? (
+                            <img 
+                              src={gamer.avatar} 
+                              alt={`${gamer.username}'s profile picture`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                // Fallback to icon if image fails to load
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                target.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            />
+                          ) : null}
+                          <Users className={`h-8 w-8 text-white ${gamer.avatar ? 'hidden' : ''}`} />
                         </div>
                         <div className="flex-1">
                           <CardTitle className="text-white text-xl">{gamer.username}</CardTitle>
@@ -390,54 +409,57 @@ export default function GamersPage() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      {/* Games */}
-                      <div className="mb-4">
-                        <h4 className="text-white font-semibold mb-2">Games:</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {gamer.games.length > 0 ? (
-                            gamer.games.map((game, index) => (
-                              <Badge key={`${gamer.id}-game-${index}`} variant="secondary" className="bg-green-600/20 text-green-300 border-green-500/30">
-                                {game}
-                              </Badge>
-                            ))
-                          ) : (
-                            <span className="text-gray-500 text-sm">No games listed</span>
-                          )}
-                        </div>
-                      </div>
+                                             {/* Games */}
+                       <div className="mb-4">
+                         <h4 className="text-white font-semibold mb-2">Games:</h4>
+                         <div className="flex flex-wrap gap-2">
+                           {gamer.games.length > 0 ? (
+                             // Remove duplicates using Set and convert back to array
+                             [...new Set(gamer.games)].map((game, index) => (
+                               <Badge key={`${gamer.id}-game-${index}`} variant="secondary" className="bg-green-600/20 text-green-300 border-green-500/30">
+                                 {game}
+                               </Badge>
+                             ))
+                           ) : (
+                             <span className="text-gray-500 text-sm">No games listed</span>
+                           )}
+                         </div>
+                       </div>
 
-                      {/* Languages */}
-                      <div className="mb-4">
-                        <h4 className="text-white font-semibold mb-2">Languages:</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {gamer.languages.length > 0 ? (
-                            gamer.languages.map((language, index) => (
-                              <Badge key={`${gamer.id}-lang-${index}`} variant="secondary" className="bg-blue-600/20 text-blue-300 border-blue-500/30">
-                                {language}
-                              </Badge>
-                            ))
-                          ) : (
-                            <span className="text-gray-500 text-sm">No languages listed</span>
-                          )}
-                        </div>
-                      </div>
+                                             {/* Languages */}
+                       <div className="mb-4">
+                         <h4 className="text-white font-semibold mb-2">Languages:</h4>
+                         <div className="flex flex-wrap gap-2">
+                           {gamer.languages.length > 0 ? (
+                             // Remove duplicates using Set and convert back to array
+                             [...new Set(gamer.languages)].map((language, index) => (
+                               <Badge key={`${gamer.id}-lang-${index}`} variant="secondary" className="bg-blue-600/20 text-blue-300 border-blue-500/30">
+                                 {language}
+                               </Badge>
+                             ))
+                           ) : (
+                             <span className="text-gray-500 text-sm">No languages listed</span>
+                           )}
+                         </div>
+                       </div>
 
-                      {/* Tags */}
-                      <div className="mb-4">
-                        <div className="flex flex-wrap gap-2">
-                          {gamer.tags.length > 0 ? (
-                            gamer.tags
-                              .filter(tag => !tag.startsWith('category:'))
-                              .map((tag, index) => (
-                                <Badge key={`${gamer.id}-tag-${index}`} variant="outline" className="border-green-500/30 text-green-300">
-                                  {tag}
-                                </Badge>
-                              ))
-                          ) : (
-                            <span className="text-gray-500 text-sm">No tags listed</span>
-                          )}
-                        </div>
-                      </div>
+                                             {/* Tags */}
+                       <div className="mb-4">
+                         <div className="flex flex-wrap gap-2">
+                           {gamer.tags.length > 0 ? (
+                             // Remove duplicates using Set and convert back to array, then filter category tags
+                             [...new Set(gamer.tags)]
+                               .filter(tag => !tag.startsWith('category:'))
+                               .map((tag, index) => (
+                                 <Badge key={`${gamer.id}-tag-${index}`} variant="outline" className="border-green-500/30 text-green-300">
+                                   {tag}
+                                 </Badge>
+                               ))
+                           ) : (
+                             <span className="text-gray-500 text-sm">No tags listed</span>
+                           )}
+                         </div>
+                       </div>
 
                                              {/* Availability */}
                        <div className="flex items-center gap-1 text-sm text-gray-400 mb-4">
@@ -445,19 +467,7 @@ export default function GamersPage() {
                          <span>{gamer.availability}</span>
                        </div>
 
-                      <div className="flex gap-2">
-                        <Button asChild className="flex-1 gaming-button">
-                          <Link href={`/profile/${gamer.username}`}>
-                            View Profile
-                          </Link>
-                        </Button>
-                        <Button asChild variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10">
-                          <Link href={`/profile/${gamer.username}/book`}>
-                            <MessageCircle className="h-4 w-4 mr-2" />
-                            Book Session
-                          </Link>
-                        </Button>
-                      </div>
+
                     </CardContent>
                   </Card>
                 ))}
