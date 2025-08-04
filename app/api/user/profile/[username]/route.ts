@@ -26,6 +26,11 @@ export async function GET(
           where: {
             isActive: true
           }
+        },
+        fixedServices: {
+          where: {
+            isActive: true
+          }
         }
       }
     });
@@ -41,11 +46,13 @@ export async function GET(
       bio: user.bio,
       avatar: user.avatar,
       isAdmin: user.isAdmin,
+      isActive: user.isActive,
       createdAt: user.createdAt.toISOString(),
       userGames: user.userGames,
       userLanguages: user.userLanguages,
       userTags: user.userTags,
-      userAvailability: user.userAvailability
+      userAvailability: user.userAvailability,
+      fixedServices: user.fixedServices
     };
 
     return NextResponse.json({ profile: publicProfile });

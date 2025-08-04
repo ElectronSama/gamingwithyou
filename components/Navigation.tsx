@@ -139,7 +139,7 @@ export default function Navigation() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="hover:bg-emerald-600/30 focus:bg-emerald-600/30 rounded-md mx-1 my-0.5">
-                      <Link href="/services" className="flex items-center space-x-2 cursor-pointer py-2">
+                      <Link href="/profile/services/dashboard" className="flex items-center space-x-2 cursor-pointer py-2">
                         <Gamepad2 className="h-4 w-4" />
                         <span>Services</span>
                       </Link>

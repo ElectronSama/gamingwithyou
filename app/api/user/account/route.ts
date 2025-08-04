@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
@@ -8,12 +8,9 @@ export async function PUT(request: NextRequest) {
   try {
     console.log('=== ACCOUNT UPDATE START ===');
     
-    const token = await getToken({ 
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
+    const session = await getServerSession(authOptions);
     
-    if (!token?.email) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -28,7 +25,7 @@ export async function PUT(request: NextRequest) {
     });
 
     const user = await prisma.user.findUnique({
-      where: { email: token.email }
+      where: { email: session.user.email }
     });
 
     if (!user) {
@@ -133,6 +130,149 @@ export async function PUT(request: NextRequest) {
       { 
         success: false,
         error: 'Failed to update account',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    console.log('=== ACCOUNT STATUS TOGGLE START ===');
+    
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { isActive } = body;
+
+    console.log('Received isActive value:', isActive, typeof isActive);
+
+    if (typeof isActive !== 'boolean') {
+      return NextResponse.json({ 
+        success: false,
+        error: 'isActive must be a boolean value' 
+      }, { status: 400 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    console.log('Found user:', { id: user.id, email: user.email, hasIsActive: 'isActive' in user });
+
+    // Update account status
+    try {
+      console.log('Attempting to update user with isActive:', isActive);
+      const updatedUser = await prisma.user.update({
+        where: { id: user.id },
+        data: { isActive }
+      });
+      console.log('User updated successfully:', { id: updatedUser.id, isActive: updatedUser.isActive });
+    } catch (error) {
+      console.error('Error updating isActive field:', error);
+      // If isActive field doesn't exist, try updating without it
+      if (error instanceof Error && error.message.includes('isActive')) {
+        console.log('isActive field not found, skipping status update');
+        return NextResponse.json({ 
+          success: false,
+          error: 'Account status feature not available yet. Please contact support.' 
+        }, { status: 400 });
+      }
+      throw error;
+    }
+
+    console.log('=== ACCOUNT STATUS TOGGLE SUCCESS ===');
+    return NextResponse.json({ 
+      success: true,
+      message: `Account ${isActive ? 'activated' : 'deactivated'} successfully`,
+      isActive
+    });
+
+  } catch (error) {
+    console.error('=== ACCOUNT STATUS TOGGLE ERROR ===');
+    console.error('Error toggling account status:', error);
+    return NextResponse.json(
+      { 
+        success: false,
+        error: 'Failed to update account status',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    console.log('=== ACCOUNT DELETION START ===');
+    
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { password, confirmText } = body;
+
+    if (!password) {
+      return NextResponse.json({ 
+        success: false,
+        error: 'Password is required to delete account' 
+      }, { status: 400 });
+    }
+
+    if (confirmText !== 'DELETE') {
+      return NextResponse.json({ 
+        success: false,
+        error: 'Please type DELETE to confirm account deletion' 
+      }, { status: 400 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, user.password || '');
+    if (!isValidPassword) {
+      return NextResponse.json({ 
+        success: false,
+        error: 'Password is incorrect' 
+      }, { status: 400 });
+    }
+
+    // Delete user account (this will cascade delete related data)
+    await prisma.user.delete({
+      where: { id: user.id }
+    });
+
+    console.log('=== ACCOUNT DELETION SUCCESS ===');
+    return NextResponse.json({ 
+      success: true,
+      message: 'Account deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('=== ACCOUNT DELETION ERROR ===');
+    console.error('Error deleting account:', error);
+    return NextResponse.json(
+      { 
+        success: false,
+        error: 'Failed to delete account',
         details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }

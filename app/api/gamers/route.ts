@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
     const game = searchParams.get('game') || '';
     const language = searchParams.get('language') || '';
     const tag = searchParams.get('tag') || '';
+    const status = searchParams.get('status') || '';
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '12');
     const offset = (page - 1) * limit;
@@ -17,6 +18,15 @@ export async function GET(request: NextRequest) {
       // Exclude admin users from public gamers list
       isAdmin: false,
     };
+
+    // Add status filter
+    if (status && status !== 'All') {
+      if (status === 'active') {
+        whereConditions.isActive = true;
+      } else if (status === 'inactive') {
+        whereConditions.isActive = false;
+      }
+    }
 
     // Add search query conditions
     if (query) {
@@ -95,6 +105,7 @@ export async function GET(request: NextRequest) {
           tags: user.userTags
             .filter(ut => !ut.tag.startsWith('category:'))
             .map(ut => ut.tag),
+          isActive: user.isActive,
           createdAt: user.createdAt.toISOString()
         };
       }));

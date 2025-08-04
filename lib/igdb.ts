@@ -210,7 +210,7 @@ class IGDBService {
 
     // Use name search instead of the search endpoint - only main games, no DLCs, expansions, or seasons
     const searchQuery = `
-      fields name,slug,summary,storyline,rating,rating_count,first_release_date,cover.url,genres.name,platforms.name;
+      fields name,slug,summary,storyline,rating,rating_count,first_release_date,cover.url,genres.name,platforms.name,platforms.id;
       where version_parent = null & category = 0 & name ~ *"${query}"*;
       limit ${Math.min(limit, 50)};
       sort rating desc;

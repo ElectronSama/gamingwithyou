@@ -25,7 +25,12 @@ import {
   AlertCircle,
   ArrowLeft,
   Plus,
-  Send
+  Send,
+  CheckCircle,
+  XCircle,
+  Ban,
+  Settings,
+  Briefcase
 } from "lucide-react"
 import Link from "next/link"
 import { Textarea } from "@/components/ui/textarea"
@@ -38,6 +43,7 @@ interface UserProfile {
   bio?: string | null
   avatar?: string | null
   isAdmin: boolean
+  isActive: boolean
   createdAt: string
   userGames: Array<{
     id: string
@@ -66,6 +72,15 @@ interface UserProfile {
     endTime: string
     price: number
     isActive: boolean
+  }>
+  fixedServices: Array<{
+    id: string
+    title: string
+    description: string
+    price: number
+    duration: number
+    isActive: boolean
+    createdAt: string
   }>
 }
 
@@ -243,6 +258,21 @@ export default function UserProfilePage() {
               Back to Gamers
             </Link>
           </Button>
+
+          {/* Inactive Account Warning */}
+          {!profile.isActive && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+              <div className="flex items-center gap-3">
+                <XCircle className="h-5 w-5 text-red-400" />
+                <div>
+                  <h3 className="text-red-300 font-medium">Inactive Account</h3>
+                  <p className="text-red-200 text-sm">
+                    This user's account is currently inactive. They may not be available for gaming sessions or respond to messages.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
           
           <div className="flex items-center gap-4 mb-6">
             <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center">
@@ -268,6 +298,24 @@ export default function UserProfilePage() {
                   <span className="text-gray-400 text-sm">{formatAvailability()}</span>
                 </div>
                 
+                {/* Account Status Badge */}
+                <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                  profile.isActive 
+                    ? 'bg-green-500/20 text-green-300 border border-green-500/30' 
+                    : 'bg-red-500/20 text-red-300 border border-red-500/30'
+                }`}>
+                  {profile.isActive ? (
+                    <>
+                      <CheckCircle className="h-3 w-3" />
+                      <span>Active</span>
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="h-3 w-3" />
+                      <span>Inactive</span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -281,7 +329,7 @@ export default function UserProfilePage() {
               <TabsList className="grid w-full grid-cols-4 bg-white/10 border border-white/20">
                 <TabsTrigger value="overview" className="text-white data-[state=active]:bg-green-600">Overview</TabsTrigger>
                 <TabsTrigger value="games" className="text-white data-[state=active]:bg-green-600">Games</TabsTrigger>
-                <TabsTrigger value="availability" className="text-white data-[state=active]:bg-green-600">Availability</TabsTrigger>
+                <TabsTrigger value="services" className="text-white data-[state=active]:bg-green-600">Services</TabsTrigger>
                 <TabsTrigger value="reviews" className="text-white data-[state=active]:bg-green-600">Reviews</TabsTrigger>
               </TabsList>
 
@@ -351,6 +399,43 @@ export default function UserProfilePage() {
                         <p className="text-gray-300">
                           {new Date(profile.createdAt).toLocaleDateString()}
                         </p>
+                      </div>
+
+                      {/* Account Status */}
+                      <div>
+                        <h3 className="text-white font-semibold mb-2 flex items-center gap-2">
+                          {profile.isActive ? (
+                            <CheckCircle className="h-4 w-4 text-green-400" />
+                          ) : (
+                            <XCircle className="h-4 w-4 text-red-400" />
+                          )}
+                          Account Status
+                        </h3>
+                        <div className="flex items-center gap-3">
+                          <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+                            profile.isActive 
+                              ? 'bg-green-500/20 text-green-300 border border-green-500/30' 
+                              : 'bg-red-500/20 text-red-300 border border-red-500/30'
+                          }`}>
+                            {profile.isActive ? (
+                              <>
+                                <CheckCircle className="h-4 w-4" />
+                                <span className="font-medium">Active Account</span>
+                              </>
+                            ) : (
+                              <>
+                                <XCircle className="h-4 w-4" />
+                                <span className="font-medium">Inactive Account</span>
+                              </>
+                            )}
+                          </div>
+                          <p className="text-gray-400 text-sm">
+                            {profile.isActive 
+                              ? 'This user is currently active and available for gaming sessions.'
+                              : 'This user is currently inactive and may not be available for gaming sessions.'
+                            }
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -435,41 +520,57 @@ export default function UserProfilePage() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="availability" className="mt-6">
+              <TabsContent value="services" className="mt-6">
                 <Card className="gaming-card">
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
-                      <Clock className="h-5 w-5" />
-                      Availability & Pricing
+                      <Briefcase className="h-5 w-5" />
+                      Services
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {profile.userAvailability && profile.userAvailability.length > 0 ? (
+                    {profile.fixedServices && profile.fixedServices.length > 0 ? (
                       <div className="space-y-4">
-                        {profile.userAvailability
-                          .filter(av => av.isActive)
-                          .map((availability) => (
-                            <Card key={availability.id} className="bg-white/5 border-white/20">
-                              <CardContent className="p-4">
-                                <div className="flex items-center justify-between">
-                                  <div>
-                                    <h4 className="text-white font-semibold">{dayNames[availability.dayOfWeek]}</h4>
-                                    <p className="text-gray-400 text-sm">
-                                      {availability.startTime} - {availability.endTime}
-                                    </p>
-                                  </div>
-                                  <div className="text-right">
-                                    <p className="text-green-400 font-semibold">${availability.price}/hr</p>
+                        {profile.fixedServices.map((service) => (
+                          <Card key={service.id} className="bg-white/5 border-white/20 hover:bg-white/10 transition-colors">
+                            <CardContent className="p-4">
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <h4 className="text-white font-semibold text-lg">{service.title}</h4>
+                                  <p className="text-gray-300 text-sm mt-2">
+                                    {service.description}
+                                  </p>
+                                  <div className="flex items-center gap-4 mt-3">
+                                    <div className="flex items-center gap-1">
+                                      <Clock className="h-4 w-4 text-gray-400" />
+                                      <span className="text-gray-400 text-sm">
+                                        {service.duration} minutes
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <Calendar className="h-4 w-4 text-gray-400" />
+                                      <span className="text-gray-400 text-sm">
+                                        Created {new Date(service.createdAt).toLocaleDateString()}
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
-                              </CardContent>
-                            </Card>
-                          ))}
+                                <div className="text-right ml-4">
+                                  <p className="text-green-400 font-semibold text-lg">${service.price}</p>
+                                  <p className="text-gray-400 text-sm">per service</p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
                       </div>
                     ) : (
                       <div className="text-center py-8">
-                        <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-gray-400">No availability set</p>
+                        <Settings className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-400">No services available yet</p>
+                        <p className="text-gray-500 text-sm mt-2">
+                          This user hasn't created any services yet
+                        </p>
                       </div>
                     )}
                   </CardContent>
@@ -632,12 +733,30 @@ export default function UserProfilePage() {
                 <CardTitle className="text-white">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button asChild className="w-full gaming-button">
-                  <Link href={`/profile/${profile.username}/book`}>
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Book Session
+                <Button 
+                  asChild 
+                  className={`w-full ${profile.isActive ? 'gaming-button' : 'bg-gray-600/20 text-gray-400 border-gray-500/30 cursor-not-allowed'}`}
+                  disabled={!profile.isActive}
+                >
+                  <Link href={profile.isActive ? `/profile/${profile.username}/book` : '#'}>
+                    {profile.isActive ? (
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                    ) : (
+                      <Ban className="h-4 w-4 mr-2" />
+                    )}
+                    {profile.isActive ? 'Book Session' : 'Account Inactive'}
                   </Link>
                 </Button>
+                {!profile.isActive && (
+                  <div className="text-center">
+                    <p className="text-xs text-gray-500 mb-1">
+                      Booking is disabled for inactive accounts
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      This user is not available for gaming sessions
+                    </p>
+                  </div>
+                )}
                 <Button asChild variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
                   <Link href={`/profile/${profile.username}/message`}>
                     <MessageCircle className="h-4 w-4 mr-2" />

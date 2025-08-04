@@ -19,6 +19,7 @@ model User {
   avatar            String?
   isAdmin           Boolean  @default(false)
   isVerified        Boolean  @default(false)
+  isActive          Boolean  @default(true)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -159,6 +160,10 @@ model FixedService {
   description String
   price       Float
   duration    Int      // minutes
+  gameId      String?  // IGDB game ID
+  gameName    String?  // IGDB game name
+  platformId  String?  // IGDB platform ID
+  platformName String? // IGDB platform name
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

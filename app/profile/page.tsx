@@ -158,6 +158,17 @@ export default function ProfilePage() {
   const [uploadingImage, setUploadingImage] = useState(false)
   const [showImageModal, setShowImageModal] = useState(false)
 
+  // Account status and deletion states
+  const [accountStatus, setAccountStatus] = useState<boolean>(true)
+  const [togglingStatus, setTogglingStatus] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deletingAccount, setDeletingAccount] = useState(false)
+  const [deleteForm, setDeleteForm] = useState({
+    password: "",
+    confirmText: ""
+  })
+  const [deleteErrors, setDeleteErrors] = useState<{[key: string]: string}>({})
+
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login")
@@ -247,6 +258,9 @@ export default function ProfilePage() {
         if (profile.avatar) {
           setProfileImage(profile.avatar)
         }
+        
+        // Set account status
+        setAccountStatus(profile.isActive !== false) // Default to true if not set
         
         console.log('Profile data loaded successfully')
       } else {
@@ -485,6 +499,91 @@ export default function ProfilePage() {
       ...prev,
       languages: prev.languages.filter(language => language !== languageToRemove)
     }))
+  }
+
+  // Account status and deletion functions
+  const handleToggleAccountStatus = async () => {
+    setTogglingStatus(true)
+    try {
+      const newStatus = !accountStatus
+      console.log('Toggling account status to:', newStatus)
+      
+      const response = await fetch('/api/user/account', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          isActive: newStatus
+        }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        console.log('Account status updated successfully:', data)
+        setAccountStatus(!accountStatus)
+        // Show success message inline instead of alert
+        setAccountErrors({ success: data.message })
+        // Clear success message after 3 seconds
+        setTimeout(() => setAccountErrors({}), 3000)
+      } else {
+        const errorData = await response.json()
+        console.error('Failed to update account status:', errorData)
+        setAccountErrors({ general: errorData.error || 'Failed to update account status' })
+      }
+    } catch (error) {
+      console.error('Error toggling account status:', error)
+      alert('Failed to update account status. Please try again.')
+    } finally {
+      setTogglingStatus(false)
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    setDeletingAccount(true)
+    try {
+      const response = await fetch('/api/user/account', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          password: deleteForm.password,
+          confirmText: deleteForm.confirmText
+        }),
+      })
+
+      if (response.ok) {
+        // Show success message and redirect after a short delay
+        setDeleteErrors({ success: 'Account deleted successfully' })
+        setTimeout(() => {
+          router.push('/login')
+        }, 2000)
+      } else {
+        const errorData = await response.json()
+        setDeleteErrors(errorData.errors || { general: errorData.error })
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error)
+      setDeleteErrors({ general: 'Failed to delete account. Please try again.' })
+    } finally {
+      setDeletingAccount(false)
+    }
+  }
+
+  const validateDeleteForm = () => {
+    const errors: {[key: string]: string} = {}
+
+    if (!deleteForm.password) {
+      errors.password = 'Password is required'
+    }
+
+    if (deleteForm.confirmText !== 'DELETE') {
+      errors.confirmText = 'Please type DELETE to confirm'
+    }
+
+    setDeleteErrors(errors)
+    return Object.keys(errors).length === 0
   }
 
   // Enhanced game functions
@@ -801,6 +900,12 @@ export default function ProfilePage() {
                       </div>
                     )}
                     
+                    {accountErrors.success && (
+                      <div className="p-3 bg-green-500/20 border border-green-500/30 rounded-lg">
+                        <p className="text-green-300 text-sm">{accountErrors.success}</p>
+                      </div>
+                    )}
+                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="username" className="text-white flex items-center gap-2">
@@ -925,6 +1030,63 @@ export default function ProfilePage() {
                       <Save className="h-4 w-4 mr-2" />
                       Save Changes
                     </Button>
+
+                    {/* Account Status Section */}
+                    <div className="border-t border-white/20 pt-6 mt-6">
+                      <h3 className="text-white font-medium mb-4 flex items-center gap-2">
+                        <AlertTriangle className="h-5 w-5" />
+                        Account Status
+                      </h3>
+                      
+                                                                      <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/20">
+                          <div>
+                            <p className="text-white font-medium">Account Status</p>
+                            <p className="text-gray-400 text-sm">
+                              {accountStatus ? 'Your account is currently active' : 'Your account is currently inactive'}
+                            </p>
+                            {accountStatus ? (
+                              <p className="text-green-400 text-xs mt-1">✓ Active - You can use all features</p>
+                            ) : (
+                              <p className="text-red-400 text-xs mt-1">⚠ Inactive - Some features may be limited</p>
+                            )}
+                          </div>
+                          <Button
+                            onClick={handleToggleAccountStatus}
+                            disabled={togglingStatus}
+                            variant={accountStatus ? "destructive" : "default"}
+                            className={accountStatus ? "bg-red-600/20 text-red-400 border-red-500/30 hover:bg-red-600/30" : "gaming-button"}
+                          >
+                            {togglingStatus ? (
+                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            ) : (
+                              <AlertTriangle className="h-4 w-4 mr-2" />
+                            )}
+                            {accountStatus ? 'Deactivate Account' : 'Activate Account'}
+                          </Button>
+                        </div>
+                    </div>
+
+                    {/* Account Deletion Section */}
+                    <div className="border-t border-red-500/30 pt-6 mt-6">
+                      <h3 className="text-red-400 font-medium mb-4 flex items-center gap-2">
+                        <AlertTriangle className="h-5 w-5" />
+                        Danger Zone
+                      </h3>
+                      
+                      <div className="p-4 bg-red-500/10 rounded-lg border border-red-500/30">
+                        <p className="text-red-300 text-sm mb-4">
+                          Once you delete your account, there is no going back. Please be certain.
+                        </p>
+                        <Button
+                          onClick={() => setShowDeleteModal(true)}
+                          variant="destructive"
+                          className="bg-red-600/20 text-red-400 border-red-500/30 hover:bg-red-600/30"
+                        >
+                          <AlertTriangle className="h-4 w-4 mr-2" />
+                          Delete Account
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                     </CardContent>
                   </Card>
@@ -1635,6 +1797,103 @@ export default function ProfilePage() {
                         </Button>
                       </div>
                     </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Account Modal */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="bg-slate-900 border-red-500/30 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-red-400 flex items-center gap-2">
+              <AlertTriangle className="h-6 w-6" />
+              Delete Account
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              This action cannot be undone. This will permanently delete your account and remove all your data.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {deleteErrors.general && (
+              <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
+                <p className="text-red-300 text-sm">{deleteErrors.general}</p>
+              </div>
+            )}
+            
+            {deleteErrors.success && (
+              <div className="p-3 bg-green-500/20 border border-green-500/30 rounded-lg">
+                <p className="text-green-300 text-sm">{deleteErrors.success}</p>
+              </div>
+            )}
+            
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="deletePassword" className="text-white flex items-center gap-2">
+                  <Lock className="h-4 w-4" />
+                  Password
+                </Label>
+                <Input
+                  id="deletePassword"
+                  type="password"
+                  value={deleteForm.password}
+                  onChange={(e) => setDeleteForm(prev => ({ ...prev, password: e.target.value }))}
+                  className="bg-white/10 border-white/20 text-white placeholder-gray-400"
+                  placeholder="Enter your password"
+                />
+                {deleteErrors.password && (
+                  <p className="text-red-400 text-xs">{deleteErrors.password}</p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="confirmDelete" className="text-white flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4" />
+                  Type DELETE to confirm
+                </Label>
+                <Input
+                  id="confirmDelete"
+                  value={deleteForm.confirmText}
+                  onChange={(e) => setDeleteForm(prev => ({ ...prev, confirmText: e.target.value }))}
+                  className="bg-white/10 border-white/20 text-white placeholder-gray-400"
+                  placeholder="Type DELETE"
+                />
+                {deleteErrors.confirmText && (
+                  <p className="text-red-400 text-xs">{deleteErrors.confirmText}</p>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex gap-3 pt-4">
+              <Button 
+                className="bg-red-600/20 text-red-400 border-red-500/30 hover:bg-red-600/30 flex-1"
+                onClick={handleDeleteAccount}
+                disabled={deletingAccount}
+              >
+                {deletingAccount ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                )}
+                Delete Account
+              </Button>
+              
+              <Button 
+                variant="outline"
+                className="border-white/20 text-white hover:bg-white/10 flex-1"
+                onClick={() => {
+                  setShowDeleteModal(false)
+                  setDeleteForm({ password: "", confirmText: "" })
+                  // Don't clear errors if there's a success message
+                  if (!deleteErrors.success) {
+                    setDeleteErrors({})
+                  }
+                }}
+                disabled={deletingAccount}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

@@ -9,7 +9,6 @@ import {
   Filter,
   Star,
   Gamepad2,
-  Clock,
   MessageCircle,
   Loader2,
   AlertCircle,
@@ -17,7 +16,9 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
-  Trophy
+  Trophy,
+  CheckCircle,
+  XCircle
 } from "lucide-react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
@@ -33,6 +34,7 @@ interface Gamer {
   hourlyRate: number
   availability: string
   tags: string[]
+  isActive: boolean
   createdAt: string
 }
 
@@ -55,12 +57,21 @@ export default function GamersPage() {
   const [selectedGame, setSelectedGame] = useState("All")
   const [selectedLanguage, setSelectedLanguage] = useState("All")
   const [selectedTag, setSelectedTag] = useState("All")
+  const [selectedStatus, setSelectedStatus] = useState("All")
   const [pagination, setPagination] = useState<Pagination | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [games, setGames] = useState<string[]>(["All"])
   const [languages, setLanguages] = useState<string[]>(["All"])
   const [tags, setTags] = useState<string[]>(["All"])
   const [stats, setStats] = useState<{totalGamers: number} | null>(null)
+
+  // Helper function to display limited items with "+X more" indicator
+  const displayLimitedItems = (items: string[], maxVisible: number = 3) => {
+    if (items.length <= maxVisible) {
+      return items;
+    }
+    return [...items.slice(0, maxVisible), `+${items.length - maxVisible} more`];
+  }
 
   // Load filters from API
   const loadFilters = async () => {
@@ -104,6 +115,10 @@ export default function GamersPage() {
         params.append('tag', selectedTag)
       }
       
+      if (selectedStatus !== 'All') {
+        params.append('status', selectedStatus)
+      }
+      
       const response = await fetch(`/api/gamers?${params.toString()}`)
       if (response.ok) {
         const data = await response.json()
@@ -140,6 +155,7 @@ export default function GamersPage() {
     setSelectedGame("All")
     setSelectedLanguage("All")
     setSelectedTag("All")
+    setSelectedStatus("All")
     fetchGamers(1)
   }
 
@@ -158,7 +174,7 @@ export default function GamersPage() {
     if (!loading) {
       fetchGamers(1)
     }
-  }, [selectedGame, selectedLanguage, selectedTag])
+  }, [selectedGame, selectedLanguage, selectedTag, selectedStatus])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-black to-slate-900">
@@ -307,6 +323,26 @@ export default function GamersPage() {
                 </div>
               </div>
 
+              {/* Status Filter */}
+              <div className="relative group w-full sm:w-auto" style={{width: '100%', minWidth: '250px'}}>
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-green-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                <div className="relative flex items-center w-full h-11 sm:h-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg hover:shadow-emerald-500/20 transition-all duration-300 group-hover:border-emerald-400/30 px-3">
+                  <CheckCircle className="h-4 w-4 text-gray-400 mr-2 group-hover:text-emerald-400 transition-colors duration-200 flex-shrink-0" />
+                  <select 
+                    value={selectedStatus}
+                    onChange={(e) => setSelectedStatus(e.target.value)}
+                    className="bg-transparent text-white focus:outline-none text-sm font-medium appearance-none cursor-pointer flex-1 min-w-0 truncate"
+                  >
+                    <option value="All" className="bg-gray-800 text-white">All Status</option>
+                    <option value="active" className="bg-gray-800 text-white">Active Only</option>
+                    <option value="inactive" className="bg-gray-800 text-white">Inactive Only</option>
+                  </select>
+                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex-shrink-0">
+                    <div className="w-0 h-0 border-l-2 border-l-transparent border-r-2 border-r-transparent border-t-2 border-t-gray-400 group-hover:border-t-emerald-400 transition-colors duration-200"></div>
+                  </div>
+                </div>
+              </div>
+
               {/* Clear Button */}
               <Button 
                 onClick={clearFilters}
@@ -323,7 +359,7 @@ export default function GamersPage() {
               <p className="text-gray-400 text-sm">
                 Showing {gamers.length} of {stats?.totalGamers || 0} gamers
                 {searchQuery && ` matching "${searchQuery}"`}
-                {(selectedGame !== "All" || selectedLanguage !== "All" || selectedTag !== "All") && 
+                {(selectedGame !== "All" || selectedLanguage !== "All" || selectedTag !== "All" || selectedStatus !== "All") && 
                   ` with selected filters`}
               </p>
             </div>
@@ -371,16 +407,16 @@ export default function GamersPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {gamers.map((gamer) => (
                   <Card 
                     key={gamer.id} 
                     className="gaming-card hover:transform hover:scale-105 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-green-500/20"
                     onClick={() => window.location.href = `/profile/${gamer.username}`}
                   >
-                    <CardHeader>
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center flex-shrink-0">
                           {gamer.avatar ? (
                             <img 
                               src={gamer.avatar} 
@@ -394,78 +430,115 @@ export default function GamersPage() {
                               }}
                             />
                           ) : null}
-                          <Users className={`h-8 w-8 text-white ${gamer.avatar ? 'hidden' : ''}`} />
+                          <Users className={`h-6 w-6 text-white ${gamer.avatar ? 'hidden' : ''}`} />
                         </div>
-                        <div className="flex-1">
-                          <CardTitle className="text-white text-xl">{gamer.username}</CardTitle>
-                          <div className="flex items-center gap-1 mt-1">
-                            <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                            <span className="text-white text-sm">{gamer.rating}</span>
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-white text-lg truncate">{gamer.username}</CardTitle>
+                          <div className="flex items-center gap-2 mt-1">
+                            <div className="flex items-center gap-1">
+                              <Star className="h-3 w-3 text-yellow-400 fill-current" />
+                              <span className="text-white text-xs">{gamer.rating}</span>
+                            </div>
+                            {/* Account Status Badge */}
+                            <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-medium ${
+                              gamer.isActive 
+                                ? 'bg-green-500/20 text-green-300 border border-green-500/30' 
+                                : 'bg-red-500/20 text-red-300 border border-red-500/30'
+                            }`}>
+                              {gamer.isActive ? (
+                                <>
+                                  <CheckCircle className="h-2.5 w-2.5" />
+                                  <span>Active</span>
+                                </>
+                              ) : (
+                                <>
+                                  <XCircle className="h-2.5 w-2.5" />
+                                  <span>Inactive</span>
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <CardDescription className="text-gray-300">
+                      <CardDescription className="text-gray-300 text-sm line-clamp-2">
                         {gamer.bio}
                       </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                                             {/* Games */}
-                       <div className="mb-4">
-                         <h4 className="text-white font-semibold mb-2">Games:</h4>
-                         <div className="flex flex-wrap gap-2">
-                           {gamer.games.length > 0 ? (
-                             // Remove duplicates using Set and convert back to array
-                             [...new Set(gamer.games)].map((game, index) => (
-                               <Badge key={`${gamer.id}-game-${index}`} variant="secondary" className="bg-green-600/20 text-green-300 border-green-500/30">
-                                 {game}
-                               </Badge>
-                             ))
-                           ) : (
-                             <span className="text-gray-500 text-sm">No games listed</span>
-                           )}
-                         </div>
-                       </div>
+                    <CardContent className="pt-0">
+                      {/* Games */}
+                      <div className="mb-3">
+                        <h4 className="text-white font-semibold text-xs mb-1.5">Games:</h4>
+                        <div className="flex flex-wrap gap-1.5">
+                          {gamer.games.length > 0 ? (
+                            displayLimitedItems([...new Set(gamer.games)], 2).map((game, index) => (
+                              <Badge 
+                                key={`${gamer.id}-game-${index}`} 
+                                variant="secondary" 
+                                className={`text-xs px-2 py-0.5 ${
+                                  game.includes('+') 
+                                    ? 'bg-gray-600/20 text-gray-300 border-gray-500/30' 
+                                    : 'bg-green-600/20 text-green-300 border-green-500/30'
+                                }`}
+                              >
+                                {game}
+                              </Badge>
+                            ))
+                          ) : (
+                            <span className="text-gray-500 text-xs">No games listed</span>
+                          )}
+                        </div>
+                      </div>
 
-                                             {/* Languages */}
-                       <div className="mb-4">
-                         <h4 className="text-white font-semibold mb-2">Languages:</h4>
-                         <div className="flex flex-wrap gap-2">
-                           {gamer.languages.length > 0 ? (
-                             // Remove duplicates using Set and convert back to array
-                             [...new Set(gamer.languages)].map((language, index) => (
-                               <Badge key={`${gamer.id}-lang-${index}`} variant="secondary" className="bg-blue-600/20 text-blue-300 border-blue-500/30">
-                                 {language}
-                               </Badge>
-                             ))
-                           ) : (
-                             <span className="text-gray-500 text-sm">No languages listed</span>
-                           )}
-                         </div>
-                       </div>
+                      {/* Languages */}
+                      <div className="mb-3">
+                        <h4 className="text-white font-semibold text-xs mb-1.5">Languages:</h4>
+                        <div className="flex flex-wrap gap-1.5">
+                          {gamer.languages.length > 0 ? (
+                            displayLimitedItems([...new Set(gamer.languages)], 2).map((language, index) => (
+                              <Badge 
+                                key={`${gamer.id}-lang-${index}`} 
+                                variant="secondary" 
+                                className={`text-xs px-2 py-0.5 ${
+                                  language.includes('+') 
+                                    ? 'bg-gray-600/20 text-gray-300 border-gray-500/30' 
+                                    : 'bg-blue-600/20 text-blue-300 border-blue-500/30'
+                                }`}
+                              >
+                                {language}
+                              </Badge>
+                            ))
+                          ) : (
+                            <span className="text-gray-500 text-xs">No languages listed</span>
+                          )}
+                        </div>
+                      </div>
 
-                                             {/* Tags */}
-                       <div className="mb-4">
-                         <div className="flex flex-wrap gap-2">
-                           {gamer.tags.length > 0 ? (
-                             // Remove duplicates using Set and convert back to array, then filter category tags
-                             [...new Set(gamer.tags)]
-                               .filter(tag => !tag.startsWith('category:'))
-                               .map((tag, index) => (
-                                 <Badge key={`${gamer.id}-tag-${index}`} variant="outline" className="border-green-500/30 text-green-300">
-                                   {tag}
-                                 </Badge>
-                               ))
-                           ) : (
-                             <span className="text-gray-500 text-sm">No tags listed</span>
-                           )}
-                         </div>
-                       </div>
-
-                                             {/* Availability */}
-                       <div className="flex items-center gap-1 text-sm text-gray-400 mb-4">
-                         <Clock className="h-4 w-4" />
-                         <span>{gamer.availability}</span>
-                       </div>
+                      {/* Tags */}
+                      <div className="mb-3">
+                        <h4 className="text-white font-semibold text-xs mb-1.5">Tags:</h4>
+                        <div className="flex flex-wrap gap-1.5">
+                          {gamer.tags.length > 0 ? (
+                            displayLimitedItems(
+                              [...new Set(gamer.tags)].filter(tag => !tag.startsWith('category:')), 
+                              2
+                            ).map((tag, index) => (
+                              <Badge 
+                                key={`${gamer.id}-tag-${index}`} 
+                                variant="outline" 
+                                className={`text-xs px-2 py-0.5 ${
+                                  tag.includes('+') 
+                                    ? 'border-gray-500/30 text-gray-300' 
+                                    : 'border-green-500/30 text-green-300'
+                                }`}
+                              >
+                                {tag}
+                              </Badge>
+                            ))
+                          ) : (
+                            <span className="text-gray-500 text-xs">No tags listed</span>
+                          )}
+                        </div>
+                      </div>
 
 
                     </CardContent>

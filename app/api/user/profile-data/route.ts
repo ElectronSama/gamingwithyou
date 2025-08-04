@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
       bio: user.bio,
       avatar: user.avatar,
       isAdmin: user.isAdmin,
+      isActive: (user as any).isActive !== undefined ? (user as any).isActive : true, // Default to true if field doesn't exist
       createdAt: user.createdAt.toISOString(),
       userGames: user.userGames,
       userLanguages: user.userLanguages,
