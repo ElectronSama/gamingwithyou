@@ -149,9 +149,9 @@ export default function GameDetailPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-black to-slate-900">
       {/* Header */}
-      <section className="py-8 bg-black/20">
+      <section className="py-6 bg-black/20">
         <div className="container mx-auto px-4">
-          <div className="flex items-center gap-4 mb-6">
+          <div className="flex items-center gap-4 mb-4">
             <Button asChild variant="outline" className="border-white/20 text-white hover:bg-white/10">
               <Link href="/games">
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -160,104 +160,104 @@ export default function GameDetailPage() {
             </Button>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Game Cover */}
-                         <div className="lg:col-span-1">
-               <div className="aspect-[3/4] bg-gradient-to-br from-green-600 to-green-700 rounded-2xl overflow-hidden shadow-2xl">
-                 {game.cover?.url ? (
-                   <img 
-                     src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.url.split('/').pop()}`}
-                     alt={game.name}
-                     className="w-full h-full object-cover"
-                     onError={(e) => {
-                       e.currentTarget.style.display = 'none';
-                     }}
-                   />
-                 ) : (
-                   <div className="w-full h-full flex items-center justify-center">
-                     <Gamepad2 className="h-24 w-24 text-white" />
-                   </div>
-                 )}
-               </div>
-             </div>
+            <div className="lg:col-span-1">
+              <div className="w-1/2 mx-auto lg:w-full aspect-[3/4] bg-gradient-to-br from-green-600 to-green-700 rounded-2xl overflow-hidden shadow-2xl">
+                {game.cover?.url ? (
+                  <img 
+                    src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.url.split('/').pop()}`}
+                    alt={game.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Gamepad2 className="h-24 w-24 text-white" />
+                  </div>
+                )}
+              </div>
+            </div>
 
             {/* Game Info */}
-            <div className="lg:col-span-2">
-              <div className="space-y-6">
+            <div className="lg:col-span-3">
+              <div className="space-y-4">
                 <div>
-                  <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                  <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
                     {game.name}
                   </h1>
                   
-                                     <div className="flex items-center gap-4 mb-6">
-                     {game.rating && (
-                       <div className="flex items-center gap-2">
-                         <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                         <span className="text-white font-semibold text-lg">
-                           {game.rating.toFixed(1)}
-                         </span>
-                         {game.rating_count && (
-                           <span className="text-gray-400 text-sm">
-                             ({game.rating_count} ratings)
-                           </span>
-                         )}
-                       </div>
-                     )}
-                     
-                     {game.first_release_date && (
-                       <div className="flex items-center gap-2">
-                         <Calendar className="h-5 w-5 text-blue-400" />
-                         <span className="text-white">
-                           {new Date(game.first_release_date * 1000).getFullYear()}
-                         </span>
-                       </div>
-                     )}
-                   </div>
-                </div>
-
-                                 {/* Tags */}
-                 <div className="flex flex-wrap gap-2">
-                   {game.genres?.map((genre, index) => (
-                     <Badge key={index} variant="secondary" className="bg-green-600/20 text-green-300 border-green-500/30">
-                       {genre.name}
-                     </Badge>
-                   ))}
-                   {game.platforms?.map((platform, index) => (
-                     <Badge key={index} variant="secondary" className="bg-blue-600/20 text-blue-300 border-blue-500/30">
-                       {platform.name}
-                     </Badge>
-                   ))}
-                   {game.game_modes?.map((mode, index) => (
-                     <Badge key={index} variant="secondary" className="bg-purple-600/20 text-purple-300 border-purple-500/30">
-                       {mode.name}
-                     </Badge>
-                   ))}
-                 </div>
-
-                                                   {/* Action Buttons */}
-                  <div className="flex flex-wrap gap-4">
-                    <Button asChild className="gaming-button">
-                      <Link href={`/games/${slug}/leaderboard`}>
-                        <Trophy className="h-4 w-4 mr-2" />
-                        Leaderboard
-                      </Link>
-                    </Button>
-                  </div>
-
-                  <div className="mt-6">
-                    <h2 className="text-2xl font-bold text-white mb-4">About {game.name}</h2>
-                    {game.summary ? (
-                      <p className="text-gray-300 leading-relaxed">
-                        {game.summary}
-                      </p>
-                    ) : game.storyline ? (
-                      <p className="text-gray-300 leading-relaxed">
-                        {game.storyline}
-                      </p>
-                    ) : (
-                      <p className="text-gray-400 italic">No description available.</p>
+                  <div className="flex items-center gap-4 mb-4">
+                    {game.rating && (
+                      <div className="flex items-center gap-2">
+                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                        <span className="text-white font-semibold text-base">
+                          {game.rating.toFixed(1)}
+                        </span>
+                        {game.rating_count && (
+                          <span className="text-gray-400 text-xs">
+                            ({game.rating_count} ratings)
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    
+                    {game.first_release_date && (
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-blue-400" />
+                        <span className="text-white text-base">
+                          {new Date(game.first_release_date * 1000).getFullYear()}
+                        </span>
+                      </div>
                     )}
                   </div>
+                </div>
+
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2">
+                  {game.genres?.map((genre, index) => (
+                    <Badge key={index} variant="secondary" className="bg-green-600/20 text-green-300 border-green-500/30">
+                      {genre.name}
+                    </Badge>
+                  ))}
+                  {game.platforms?.map((platform, index) => (
+                    <Badge key={index} variant="secondary" className="bg-blue-600/20 text-blue-300 border-blue-500/30">
+                      {platform.name}
+                    </Badge>
+                  ))}
+                  {game.game_modes?.map((mode, index) => (
+                    <Badge key={index} variant="secondary" className="bg-purple-600/20 text-purple-300 border-purple-500/30">
+                      {mode.name}
+                    </Badge>
+                  ))}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-wrap gap-4">
+                  <Button asChild className="gaming-button">
+                    <Link href={`/games/${slug}/leaderboard`}>
+                      <Trophy className="h-4 w-4 mr-2" />
+                      Leaderboard
+                    </Link>
+                  </Button>
+                </div>
+
+                <div className="mt-4">
+                  <h2 className="text-xl font-bold text-white mb-3">About {game.name}</h2>
+                  {game.summary ? (
+                    <p className="text-gray-400 leading-normal text-sm">
+                      {game.summary}
+                    </p>
+                  ) : game.storyline ? (
+                    <p className="text-gray-400 leading-normal text-sm">
+                      {game.storyline}
+                    </p>
+                  ) : (
+                    <p className="text-gray-400 italic">No description available.</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
