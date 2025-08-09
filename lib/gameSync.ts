@@ -83,7 +83,7 @@ export class GameSyncService {
     try {
       // Check if IGDB is configured
       if (!igdbService.isConfigured()) {
-        throw new Error('IGDB is not configured. Please set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET in your .env.local file.');
+        throw new Error('IGDB is not configured. Please set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET in your .env.local.local file.');
       }
 
       console.log(`Searching IGDB for: "${query}" (limit: ${limit})`);
@@ -126,7 +126,7 @@ export class GameSyncService {
     try {
       // Check if IGDB is configured
       if (!igdbService.isConfigured()) {
-        throw new Error('IGDB is not configured. Please set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET in your .env.local file.');
+        throw new Error('IGDB is not configured. Please set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET in your .env.local.local file.');
       }
 
       console.log(`Syncing ${limit} popular games from IGDB`);
@@ -169,7 +169,7 @@ export class GameSyncService {
     try {
       // Check if IGDB is configured
       if (!igdbService.isConfigured()) {
-        throw new Error('IGDB is not configured. Please set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET in your .env.local file.');
+        throw new Error('IGDB is not configured. Please set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET in your .env.local.local file.');
       }
 
       console.log(`Syncing game by slug: ${slug}`);
@@ -193,7 +193,7 @@ export class GameSyncService {
     try {
       // Check if IGDB is configured
       if (!igdbService.isConfigured()) {
-        throw new Error('IGDB is not configured. Please set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET in your .env.local file.');
+        throw new Error('IGDB is not configured. Please set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET in your .env.local.local file.');
       }
 
       console.log(`Syncing ${limit} games for genre ID: ${genreId}`);
@@ -236,7 +236,7 @@ export class GameSyncService {
     try {
       // Check if IGDB is configured
       if (!igdbService.isConfigured()) {
-        throw new Error('IGDB is not configured. Please set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET in your .env.local file.');
+        throw new Error('IGDB is not configured. Please set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET in your .env.local.local file.');
       }
 
       console.log(`Syncing ${limit} games for platform ID: ${platformId}`);

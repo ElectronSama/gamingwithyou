@@ -36,6 +36,32 @@ export async function GET(request: NextRequest) {
       ];
     }
 
+    if (game && game !== 'All') {
+      whereConditions.userGames = {
+        some: {
+          game: {
+            name: game,
+          },
+        },
+      };
+    }
+
+    if (language && language !== 'All') {
+      whereConditions.userLanguages = {
+        some: {
+          language: language,
+        },
+      };
+    }
+
+    if (tag && tag !== 'All') {
+      whereConditions.userTags = {
+        some: {
+          tag: tag,
+        },
+      };
+    }
+
     // Get users with their related data
     const users = await prisma.user.findMany({
       where: whereConditions,
@@ -65,63 +91,54 @@ export async function GET(request: NextRequest) {
       where: whereConditions
     });
 
-    // Helper function to calculate user rating
-    const calculateUserRating = async (userId: string) => {
-      const reviews = await prisma.review.findMany({
-        where: { reviewedId: userId },
-        select: { rating: true }
-      });
+    // Get all ratings and calculate averages
+    const averageRatings = await prisma.review.groupBy({
+      by: ['reviewedId'],
+      _avg: {
+        rating: true,
+      },
+      where: {
+        reviewedId: {
+          in: users.map(u => u.id),
+        },
+      },
+    });
+
+    const ratingsMap = new Map<string, number>();
+    averageRatings.forEach(r => {
+      if (r._avg.rating !== null) {
+        ratingsMap.set(r.reviewedId, Math.round(r._avg.rating * 10) / 10);
+      }
+    });
+
+    // Transform users to gamer format
+    const gamers = users.map(user => {
+      const rating = ratingsMap.get(user.id) || 0;
       
-      if (reviews.length === 0) return 0;
-      const totalRating = reviews.reduce((sum: number, review: any) => sum + review.rating, 0);
-      return Math.round((totalRating / reviews.length) * 10) / 10;
-    };
+      const avgHourlyRate = user.userAvailability.length > 0
+        ? user.userAvailability.reduce((sum, avail) => sum + avail.price, 0) / user.userAvailability.length
+        : 0;
 
-    // Transform users to gamer format and apply additional filters
-    const gamers = await Promise.all(users.map(async user => {
-      // Calculate average rating from reviews
-      const rating = await calculateUserRating(user.id);
-        
-        // Calculate average hourly rate from availability
-        const avgHourlyRate = user.userAvailability.length > 0 
-          ? user.userAvailability.reduce((sum, avail) => sum + avail.price, 0) / user.userAvailability.length
-          : 0;
+      const availability = user.userAvailability.length > 0
+        ? `${user.userAvailability.length} time slots available`
+        : 'No availability set';
 
-        // Format availability
-        const availability = user.userAvailability.length > 0 
-          ? `${user.userAvailability.length} time slots available`
-          : 'No availability set';
-
-        return {
-          id: user.id,
-          username: user.username,
-          avatar: user.avatar || null,
-          bio: user.bio || 'No bio available',
-          games: user.userGames.map(ug => ug.game.name),
-          languages: user.userLanguages.map(ul => ul.language),
-          rating: rating,
-          hourlyRate: Math.round(avgHourlyRate),
-          availability: availability,
-          tags: user.userTags
-            .filter(ut => !ut.tag.startsWith('category:'))
-            .map(ut => ut.tag),
-          isActive: user.isActive,
-          createdAt: user.createdAt.toISOString()
-        };
-      }));
-
-    // Apply additional filters
-    const filteredGamers = gamers.filter(gamer => {
-      if (game && game !== 'All' && !gamer.games.includes(game)) {
-        return false;
-      }
-      if (language && language !== 'All' && !gamer.languages.includes(language)) {
-        return false;
-      }
-      if (tag && tag !== 'All' && !gamer.tags.includes(tag)) {
-        return false;
-      }
-      return true;
+      return {
+        id: user.id,
+        username: user.username,
+        avatar: user.avatar || null,
+        bio: user.bio || 'No bio available',
+        games: user.userGames.map(ug => ug.game.name),
+        languages: user.userLanguages.map(ul => ul.language),
+        rating: rating,
+        hourlyRate: Math.round(avgHourlyRate),
+        availability: availability,
+        tags: user.userTags
+          .filter(ut => !ut.tag.startsWith('category:'))
+          .map(ut => ut.tag),
+        isActive: user.isActive,
+        createdAt: user.createdAt.toISOString()
+      };
     });
 
     // Calculate pagination info
@@ -130,7 +147,7 @@ export async function GET(request: NextRequest) {
     const hasPrev = page > 1;
 
     return NextResponse.json({
-      gamers: filteredGamers,
+      gamers: gamers,
       pagination: {
         page,
         limit,
@@ -150,4 +167,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

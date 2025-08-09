@@ -104,7 +104,7 @@ class IGDBService {
 
   private async getAccessToken(): Promise<string> {
     if (!this.clientId || !this.clientSecret) {
-      throw new Error('IGDB credentials not configured. Please set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET in your .env.local file.');
+      throw new Error('IGDB credentials not configured. Please set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET in your .env.local.local file.');
     }
 
     if (this.accessToken && Date.now() < this.tokenExpiry) {

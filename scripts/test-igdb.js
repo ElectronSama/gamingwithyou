@@ -68,7 +68,7 @@ async function testIGDBIntegration() {
     console.error('\n❌ Test failed:', error.response?.data?.error || error.message);
     
     if (error.response?.status === 401) {
-      console.log('\n💡 Make sure your IGDB_CLIENT_ID and IGDB_CLIENT_SECRET are set correctly in your .env file.');
+      console.log('\n💡 Make sure your IGDB_CLIENT_ID and IGDB_CLIENT_SECRET are set correctly in your .env.local file.');
     } else if (error.code === 'ECONNREFUSED') {
       console.log('\n💡 Make sure your development server is running on http://localhost:3000');
     }

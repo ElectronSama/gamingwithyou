@@ -71,8 +71,8 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error && error.message.includes('IGDB is not configured')) {
       return NextResponse.json(
         { 
-          error: 'IGDB is not configured. Please set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET in your .env.local file.',
-          details: 'To use IGDB API, you need to: 1) Register at https://api.igdb.com/ 2) Get your Client ID and Client Secret 3) Add them to .env.local file'
+          error: 'IGDB is not configured. Please set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET in your .env.local.local file.',
+          details: 'To use IGDB API, you need to: 1) Register at https://api.igdb.com/ 2) Get your Client ID and Client Secret 3) Add them to .env.local.local file'
         },
         { status: 500 }
       );

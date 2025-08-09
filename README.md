@@ -68,8 +68,8 @@ For detailed setup instructions, see [IGDB_SETUP.md](./IGDB_SETUP.md).
 
 3. **Set up environment variables**
    ```bash
-   cp .env.example .env.local
-   # Edit .env.local with your configuration
+   cp .env.local.example .env.local.local
+   # Edit .env.local.local with your configuration
    ```
 
 4. **Set up the database**

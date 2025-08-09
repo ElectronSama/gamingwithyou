@@ -21,7 +21,7 @@ import {
   XCircle
 } from "lucide-react"
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 interface Gamer {
   id: string
@@ -64,6 +64,7 @@ export default function GamersPage() {
   const [languages, setLanguages] = useState<string[]>(["All"])
   const [tags, setTags] = useState<string[]>(["All"])
   const [stats, setStats] = useState<{totalGamers: number} | null>(null)
+  const isInitialMount = useRef(true);
 
   // Helper function to display limited items with "+X more" indicator
   const displayLimitedItems = (items: string[], maxVisible: number = 3) => {
@@ -171,6 +172,10 @@ export default function GamersPage() {
 
   // Reload when filters change
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
     if (!loading) {
       fetchGamers(1)
     }
