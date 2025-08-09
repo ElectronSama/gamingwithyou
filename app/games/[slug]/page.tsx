@@ -246,6 +246,21 @@ export default function GameDetailPage() {
                       </Link>
                     </Button>
                   </div>
+
+                  <div className="mt-6">
+                    <h2 className="text-2xl font-bold text-white mb-4">About {game.name}</h2>
+                    {game.summary ? (
+                      <p className="text-gray-300 leading-relaxed">
+                        {game.summary}
+                      </p>
+                    ) : game.storyline ? (
+                      <p className="text-gray-300 leading-relaxed">
+                        {game.storyline}
+                      </p>
+                    ) : (
+                      <p className="text-gray-400 italic">No description available.</p>
+                    )}
+                  </div>
               </div>
             </div>
           </div>
@@ -276,93 +291,70 @@ export default function GameDetailPage() {
 
             {/* Overview Tab */}
             <TabsContent value="overview" className="mt-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2">
-                  <Card className="gaming-card">
-                    <CardHeader>
-                      <CardTitle className="text-white">About {game.name}</CardTitle>
-                    </CardHeader>
-                                         <CardContent>
-                       {game.summary ? (
-                         <p className="text-gray-300 leading-relaxed">
-                           {game.summary}
-                         </p>
-                       ) : game.storyline ? (
-                         <p className="text-gray-300 leading-relaxed">
-                           {game.storyline}
-                         </p>
-                       ) : (
-                         <p className="text-gray-400 italic">No description available.</p>
-                       )}
-                     </CardContent>
-                  </Card>
-                </div>
+              <div className="space-y-6">
+                {/* Game Details */}
+                <Card className="gaming-card">
+                  <CardHeader>
+                    <CardTitle className="text-white">Game Details</CardTitle>
+                  </CardHeader>
+                                       <CardContent className="space-y-4">
+                     {game.first_release_date && (
+                       <div className="flex justify-between">
+                         <span className="text-gray-400">Release Date</span>
+                         <span className="text-white">{new Date(game.first_release_date * 1000).toLocaleDateString()}</span>
+                       </div>
+                     )}
+                     {game.genres && game.genres.length > 0 && (
+                       <div className="flex justify-between">
+                         <span className="text-gray-400">Genres</span>
+                         <span className="text-white">{game.genres.map(genre => genre.name).join(', ')}</span>
+                       </div>
+                     )}
+                     {game.platforms && game.platforms.length > 0 && (
+                       <div className="flex justify-between">
+                         <span className="text-gray-400">Platforms</span>
+                         <span className="text-white">{game.platforms.map(platform => platform.name).join(', ')}</span>
+                       </div>
+                     )}
+                     {game.game_modes && game.game_modes.length > 0 && (
+                       <div className="flex justify-between">
+                         <span className="text-gray-400">Game Modes</span>
+                         <span className="text-white">{game.game_modes.map(mode => mode.name).join(', ')}</span>
+                       </div>
+                     )}
+                   </CardContent>
+                </Card>
 
-                <div className="space-y-6">
-                  {/* Game Details */}
-                  <Card className="gaming-card">
-                    <CardHeader>
-                      <CardTitle className="text-white">Game Details</CardTitle>
-                    </CardHeader>
-                                         <CardContent className="space-y-4">
-                       {game.first_release_date && (
-                         <div className="flex justify-between">
-                           <span className="text-gray-400">Release Date</span>
-                           <span className="text-white">{new Date(game.first_release_date * 1000).toLocaleDateString()}</span>
+                                   {/* Rating */}
+                 {game.rating && (
+                   <Card className="gaming-card">
+                     <CardHeader>
+                       <CardTitle className="text-white">Rating</CardTitle>
+                     </CardHeader>
+                     <CardContent>
+                       <div className="flex items-center gap-3">
+                         <div className="text-3xl font-bold text-yellow-400">
+                           {game.rating.toFixed(1)}
                          </div>
-                       )}
-                       {game.genres && game.genres.length > 0 && (
-                         <div className="flex justify-between">
-                           <span className="text-gray-400">Genres</span>
-                           <span className="text-white">{game.genres.map(genre => genre.name).join(', ')}</span>
+                         <div>
+                           <div className="flex items-center gap-1">
+                             {[...Array(5)].map((_, i) => (
+                               <Star 
+                                 key={i} 
+                                 className={`h-4 w-4 ${i < Math.floor(game.rating!) ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} 
+                               />
+                             ))}
+                           </div>
+                           {game.rating_count && (
+                             <p className="text-gray-400 text-sm mt-1">
+                               {game.rating_count} ratings
+                             </p>
+                           )}
                          </div>
-                       )}
-                       {game.platforms && game.platforms.length > 0 && (
-                         <div className="flex justify-between">
-                           <span className="text-gray-400">Platforms</span>
-                           <span className="text-white">{game.platforms.map(platform => platform.name).join(', ')}</span>
-                         </div>
-                       )}
-                       {game.game_modes && game.game_modes.length > 0 && (
-                         <div className="flex justify-between">
-                           <span className="text-gray-400">Game Modes</span>
-                           <span className="text-white">{game.game_modes.map(mode => mode.name).join(', ')}</span>
-                         </div>
-                       )}
+                       </div>
                      </CardContent>
-                  </Card>
-
-                                     {/* Rating */}
-                   {game.rating && (
-                     <Card className="gaming-card">
-                       <CardHeader>
-                         <CardTitle className="text-white">Rating</CardTitle>
-                       </CardHeader>
-                       <CardContent>
-                         <div className="flex items-center gap-3">
-                           <div className="text-3xl font-bold text-yellow-400">
-                             {game.rating.toFixed(1)}
-                           </div>
-                           <div>
-                             <div className="flex items-center gap-1">
-                               {[...Array(5)].map((_, i) => (
-                                 <Star 
-                                   key={i} 
-                                   className={`h-4 w-4 ${i < Math.floor(game.rating!) ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} 
-                                 />
-                               ))}
-                             </div>
-                             {game.rating_count && (
-                               <p className="text-gray-400 text-sm mt-1">
-                                 {game.rating_count} ratings
-                               </p>
-                             )}
-                           </div>
-                         </div>
-                       </CardContent>
-                     </Card>
-                   )}
-                </div>
+                   </Card>
+                 )}
               </div>
             </TabsContent>
 
@@ -709,4 +701,4 @@ export default function GameDetailPage() {
       </section>
     </div>
   )
-} 
+}
