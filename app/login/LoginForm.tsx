@@ -4,18 +4,14 @@ import { useState, useEffect } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { 
   LogIn, 
   Mail, 
   Lock, 
   Eye, 
   EyeOff,
-  Gamepad2,
-  Sparkles,
-  Trophy,
-  Users,
-  Star
+  Gamepad2
 } from "lucide-react"
 import Link from "next/link"
 
@@ -49,13 +45,14 @@ export default function LoginForm() {
       })
 
       if (result?.error) {
-        setError("Invalid email or password")
+        setError("Invalid email or password. Please try again.")
       } else {
         // Login successful, redirect to home page
         router.push("/")
       }
     } catch (error) {
-      setError("An error occurred during login")
+      console.error("Login error:", error)
+      setError("An unexpected error occurred during login.")
     } finally {
       setIsLoading(false)
     }
@@ -64,10 +61,10 @@ export default function LoginForm() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-black to-slate-900 flex">
       {/* Left Column - Gaming Content */}
-              <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-600/20 to-green-800/20 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-600/20 to-green-800/20 relative overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0">
-                      <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
           <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
         </div>
@@ -77,49 +74,6 @@ export default function LoginForm() {
           <div className="w-32 h-32 bg-gradient-to-br from-green-600 to-green-700 rounded-3xl flex items-center justify-center mb-8 shadow-2xl">
             <Gamepad2 className="h-16 w-16 text-white" />
           </div>
-          
-          <h1 className="text-5xl font-bold text-white mb-6">
-            Welcome Back to
-            <span className="block bg-gradient-to-r from-green-400 to-green-500 bg-clip-text text-transparent">
-              GamingWithYou
-            </span>
-          </h1>
-          
-          <p className="text-xl text-gray-300 mb-12 max-w-md">
-            Ready to dominate? Let's get you back in the game and connect with fellow gamers!
-          </p>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-8 w-full max-w-md">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-400 mb-2">10K+</div>
-              <div className="text-gray-400 text-sm">Active Gamers</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-400 mb-2">500+</div>
-              <div className="text-gray-400 text-sm">Games Available</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-400 mb-2">24/7</div>
-              <div className="text-gray-400 text-sm">Support</div>
-            </div>
-          </div>
-
-          {/* Features */}
-          <div className="mt-12 space-y-4">
-            <div className="flex items-center gap-3 text-gray-300">
-              <Trophy className="h-5 w-5 text-yellow-400" />
-              <span>Join tournaments and win prizes</span>
-            </div>
-            <div className="flex items-center gap-3 text-gray-300">
-              <Users className="h-5 w-5 text-blue-400" />
-              <span>Connect with gamers worldwide</span>
-            </div>
-            <div className="flex items-center gap-3 text-gray-300">
-              <Star className="h-5 w-5 text-green-400" />
-              <span>Build your gaming reputation</span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -127,20 +81,9 @@ export default function LoginForm() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <Card className="w-full max-w-md gaming-card border-0 bg-gradient-to-br from-green-600/10 to-green-800/10 backdrop-blur-sm">
           <CardHeader className="text-center">
-                          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-green-600 to-green-700 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-              <Gamepad2 className="h-8 w-8 text-white" />
-            </div>
-            <div className="flex items-center justify-center gap-2 mb-4">
-                          <Sparkles className="h-5 w-5 text-green-400" />
-            <span className="text-green-400 text-sm font-medium">Welcome Back, Gamer!</span>
-            <Sparkles className="h-5 w-5 text-green-400" />
-            </div>
             <CardTitle className="text-3xl font-bold text-white mb-2">
               Sign In
             </CardTitle>
-            <CardDescription className="text-gray-300 text-lg">
-              Ready to dominate? Let's get you back in the game!
-            </CardDescription>
           </CardHeader>
           <CardContent>
             {error && (
@@ -242,4 +185,4 @@ export default function LoginForm() {
       </div>
     </div>
   )
-} 
+}
